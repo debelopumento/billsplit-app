@@ -100,7 +100,7 @@ $(function() {
             $('.js-currentBillFriendList').html('');
             currentBill.billSplits.forEach(function(billSplitter) {
                 $('.js-currentBillFriendList').append('<span>' + billSplitter.name + '  </span>');
-                $('.js-currentBillFriendList').append('<span>  $' + billSplitter.splitAmount + '</span><br>');
+                $('.js-currentBillFriendList').append('<span>  $' + '<input type="number" value=' + billSplitter.splitAmount + '></span><br>');
             });
         }
         
