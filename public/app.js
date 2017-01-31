@@ -51,24 +51,38 @@ $(function() {
             ]
     };
 
+    function addNewFriend() {
+        $('main').html('<p>Add this user:</p>');
+        $('main').append('<form>Username:<br>' +
+            '<input type="text" name="username"><br>' +
+            '<button>Submit</button>'
+        );
 
-function getBillSplitsSummary(callbackFn) {
-    setTimeout(function(){ callbackFn(MOCK_DATA)}, 1);
-}
-
-
-function displayBillSplitsSummary(data) {
-    $('nav').append('<h4>Hello, ' + data.MOCK_USERS[0].fullName + '</h4>');
-    $('main').append('<p>Your bill splits summary:</p>');
-    var currentUserFriendList = data.MOCK_USERS[0].friendList;
-    for (index in currentUserFriendList) {
-        $('main').append('<p>' + currentUserFriendList[index].fullName + ':  $' + currentUserFriendList[index].balance + '   <button>See Log</button></p>');
     }
-    $('main').append('<button>Add a new user to your list</button></br>');
-    $('main').append('<button>Add a new bill</button>');
 
-}
+    function getBillSplitsSummary(callbackFn) {
+        setTimeout(function(){ callbackFn(MOCK_DATA)}, 1);
+    }
 
-getBillSplitsSummary(displayBillSplitsSummary);
+
+    function displayBillSplitsSummary(data) {
+        $('nav').html('<h4>Hello, ' + data.MOCK_USERS[0].fullName + '</h4>');
+        $('main').html('<p>Your bill splits summary:</p>');
+        var currentUserFriendList = data.MOCK_USERS[0].friendList;
+        for (index in currentUserFriendList) {
+            $('main').append('<p>' + currentUserFriendList[index].fullName + ':  $' + currentUserFriendList[index].balance + '   <button>See Log</button></p>');
+        }
+        $('main').append('<button class="js-addNewFriend">Add a new user to your list</button></br>');
+        $('main').append('<button>Add a new bill</button>');
+        $('.js-addNewFriend').click(function(event) {
+            addNewFriend();
+        });
+    }
+
+    getBillSplitsSummary(displayBillSplitsSummary);
+
+    $('.js-goToMainPage').click(function(event) {
+        getBillSplitsSummary(displayBillSplitsSummary);
+    })
 
 });
