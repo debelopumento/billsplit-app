@@ -58,12 +58,15 @@ function getBillSplitsSummary(callbackFn) {
 
 
 function displayBillSplitsSummary(data) {
-    for (index in data.MOCK_USERS) {
-       $('body').append(
-        '<p>' + data.MOCK_USERS[index].fullName + '</p>');
-       $('body').append(
-        '<p>' + data.MOCK_USERS[index].friendList[0].billHistory[0].discription + '</p>');
+    $('nav').append('<h4>Hello, ' + data.MOCK_USERS[0].fullName + '</h4>');
+    $('main').append('<p>Your bill splits summary:</p>');
+    var currentUserFriendList = data.MOCK_USERS[0].friendList;
+    for (index in currentUserFriendList) {
+        $('main').append('<p>' + currentUserFriendList[index].fullName + ':  $' + currentUserFriendList[index].balance + '   <button>See Log</button></p>');
     }
+    $('main').append('<button>Add a new user to your list</button></br>');
+    $('main').append('<button>Add a new bill</button>');
+
 }
 
 getBillSplitsSummary(displayBillSplitsSummary);
