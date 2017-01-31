@@ -58,12 +58,13 @@ $(function() {
                 billDate: 01-01-2017,
                 description: '',
                 billSplits: [
-                {name: currentUser.fullName,
-                 splitAmount: (inputBillTotal/2)
-                },
-                {name: "Jane Doe",
-                 splitAmount: (inputBillTotal/2)
-                }]
+                    {name: currentUser.fullName,
+                     splitAmount: (inputBillTotal/2)
+                    },
+                    {name: "Jane Doe",
+                     splitAmount: (inputBillTotal/2)
+                    }
+                ]
             };
         
 
@@ -81,14 +82,16 @@ $(function() {
 
         inputBillTotal = document.getElementById('billTotalAmount');
         //console.log(20, inputBillTotal);
-        function useValue() {
+        function updateBillTotal() {
             var currentBillTotal = inputBillTotal.value;
             console.log(10, currentBillTotal);
             currentBill.totalAmount = currentBillTotal;
-            currentBill.billSplits[0].splitAmount = currentBill.totalAmount / 2;
+            currentBill.billSplits.forEach(function(billSplitter) {
+                billSplitter.splitAmount = currentBill.totalAmount / currentBill.billSplits.length;
+            });
             renderCurrentBillSplitList();
         }
-        inputBillTotal.onchange = useValue;
+        inputBillTotal.onchange = updateBillTotal;
         
         console.log(21, currentUser.fullName);
 
