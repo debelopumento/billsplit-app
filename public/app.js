@@ -51,13 +51,67 @@ $(function() {
             ]
     };
 
+    function addNewBill(currentUser) {
+        var inputBillTotal = 0;
+        var currentBill = {
+                totalAmount: inputBillTotal,
+                billDate: 01-01-2017,
+                description: '',
+                billSplits: [
+                {name: currentUser.fullName,
+                 splitAmount: (inputBillTotal/2)
+                },
+                {name: "Jane Doe",
+                 splitAmount: (inputBillTotal/2)
+                }]
+            };
+        
+
+
+
+        $('main').html('<p>Add a new bill</p>');
+        $('main').append('<form class="js-billDetailsInput">' +
+            'Date <input type="date" name="billDate"><br>' +
+            'Description <input type="text" name="billDescription"><br>' +
+            'Total Amount <input type="number" id="billTotalAmount" min="0"><br></form>'
+        );
+        $('main').append('<div></div>' + '<div class="js-currentBillFriendList"></div>');
+        
+        renderCurrentBillSplitList();
+
+        inputBillTotal = document.getElementById('billTotalAmount');
+        //console.log(20, inputBillTotal);
+        function useValue() {
+            var currentBillTotal = inputBillTotal.value;
+            console.log(10, currentBillTotal);
+            currentBill.totalAmount = currentBillTotal;
+            currentBill.billSplits[0].splitAmount = currentBill.totalAmount / 2;
+            renderCurrentBillSplitList();
+        }
+        inputBillTotal.onchange = useValue;
+        
+        console.log(21, currentUser.fullName);
+
+        function renderCurrentBillSplitList() {
+            
+            $('.js-currentBillFriendList').html('');
+            currentBill.billSplits.forEach(function(billSplitter) {
+                $('.js-currentBillFriendList').append('<span>' + billSplitter.name + '  </span>');
+                $('.js-currentBillFriendList').append('<span>  $' + billSplitter.splitAmount + '</span><br>');
+            });
+        }
+        
+
+        //$('main').append('<div><form><input type="text" id="js-addThisUser"><button type="submit">Add Friend to this bill</button></form></div>');
+
+    }
+
     function addNewFriend() {
         $('main').html('<p>Add this user:</p>');
         $('main').append('<form>Username:<br>' +
             '<input type="text" name="username"><br>' +
             '<button>Submit</button>'
         );
-
     }
 
     function getBillSplitsSummary(callbackFn) {
@@ -73,9 +127,12 @@ $(function() {
             $('main').append('<p>' + currentUserFriendList[index].fullName + ':  $' + currentUserFriendList[index].balance + '   <button>See Log</button></p>');
         }
         $('main').append('<button class="js-addNewFriend">Add a new user to your list</button></br>');
-        $('main').append('<button>Add a new bill</button>');
+        $('main').append('<button class="js-addNewBill">Add a new bill</button>');
         $('.js-addNewFriend').click(function(event) {
             addNewFriend();
+        });
+        $('.js-addNewBill').click(function(event) {
+            addNewBill(data.MOCK_USERS[0]);
         });
     }
 
