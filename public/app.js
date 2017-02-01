@@ -58,10 +58,12 @@ $(function() {
                 billDate: 01-01-2017,
                 description: '',
                 billSplits: [
-                    {name: currentUser.fullName,
+                    {splitterId: currentUser.id,
+                     name: currentUser.fullName,
                      splitAmount: (inputBillTotal/2)
                     },
-                    {name: "Jane Doe",
+                    {splitterId: "username-userB",
+                     name: "Jane Doe",
                      splitAmount: (inputBillTotal/2)
                     }
                 ]
@@ -74,38 +76,99 @@ $(function() {
         $('main').append('<form class="js-billDetailsInput">' +
             'Date <input type="date" name="billDate"><br>' +
             'Description <input type="text" name="billDescription"><br>' +
-            'Total Amount <input type="number" id="billTotalAmount" min="0"><br></form>'
+            'Total Amount <input type="number" id="js-billTotalAmount" min="0"><br></form>'
         );
-        $('main').append('<div></div>' + '<div class="js-currentBillFriendList"></div>');
-        
+        $('main').append('<div><button class="js-equalSplit">Equal Split</button></div>' + '<div class="js-currentBillFriendList"></div>');
         renderCurrentBillSplitList();
 
-        inputBillTotal = document.getElementById('billTotalAmount');
-        //console.log(20, inputBillTotal);
+        inputBillTotal = document.getElementById('js-billTotalAmount');
         function updateBillTotal() {
             var currentBillTotal = inputBillTotal.value;
             console.log(10, currentBillTotal);
             currentBill.totalAmount = currentBillTotal;
-            currentBill.billSplits.forEach(function(billSplitter) {
-                billSplitter.splitAmount = currentBill.totalAmount / currentBill.billSplits.length;
-            });
+            
             renderCurrentBillSplitList();
         }
         inputBillTotal.onchange = updateBillTotal;
         
         console.log(21, currentUser.fullName);
 
+        function equalSplit() {
+            currentBill.billSplits.forEach(function(billSplitter) {
+                billSplitter.splitAmount = currentBill.totalAmount / currentBill.billSplits.length;
+            });
+            renderCurrentBillSplitList();
+
+        }
+
+        function updateCurrentBill(updatedSplitAmount, updatedPersonUsername) {
+            console.log(24);
+            currentBill.billSplits.forEach(function(billSplit) {
+                if (billSplit.splitterId === updatedPersonUsername) {
+                    billSplit.splitAmount = updatedSplitAmount;
+                }
+            });
+            renderCurrentBillSplitList();
+        }
+
+
+        function addFriendToBill(addFriendName, addSplitAmount) {
+            var friendId = "username=userE";
+            var addedFriend = {
+                splitterId: friendId,
+                name: addFriendName,
+                splitAmount: addSplitAmount
+            };
+            currentBill.billSplits.push(addedFriend);
+            renderCurrentBillSplitList();
+        }
+
         function renderCurrentBillSplitList() {
             
             $('.js-currentBillFriendList').html('');
             currentBill.billSplits.forEach(function(billSplitter) {
-                $('.js-currentBillFriendList').append('<span>' + billSplitter.name + '  </span>');
-                $('.js-currentBillFriendList').append('<span>  $' + '<input type="number" value=' + billSplitter.splitAmount + '></span><br>');
+                $('.js-currentBillFriendList').append(
+                    '<div id="' + 
+                    billSplitter.splitterId + 
+                    '">' +
+                    '<span>' + 
+                    billSplitter.name + 
+                    '  </span><span>  $<input type="number" class="js-billSplitterSplitAmount" value=' +
+                    billSplitter.splitAmount + 
+                    '></span><button class="js-updateCurrentSplit">Update</button></div>'
+                );
             });
-        }
+            $('.js-currentBillFriendList').append(
+                '<input class="js-addFriendName" type="text" placeholder="Jack Doe">  $' +
+                '<input class="js-addSplitAmount" type="number" placeholder="$12.00">' +
+                '<button class="js-addaSplitter">Add</button><br>'
+            );
+
+            
         
 
-        //$('main').append('<div><form><input type="text" id="js-addThisUser"><button type="submit">Add Friend to this bill</button></form></div>');
+            $('.js-currentBillFriendList').append('<button>Submit</button>');
+
+
+
+            $('.js-updateCurrentSplit').click(function(event) {
+                var updatedSplitAmount = $('.js-billSplitterSplitAmount').val();
+                var updatedPersonUsername = $(this).closest('div').attr("id");
+                console.log(25, updatedSplitAmount, updatedPersonUsername);
+                updateCurrentBill(updatedSplitAmount, updatedPersonUsername);
+            });
+        }
+
+        $('.js-equalSplit').click(function(event) {
+            equalSplit();
+        });
+
+        $('.js-addaSplitter').click(function(event) {
+            var addFriendName = $('.js-addFriendName').val();
+            var addSplitAmount = $('.js-addSplitAmount').val();
+            addFriendToBill(addFriendName, addSplitAmount);
+        });
+        
 
     }
 
