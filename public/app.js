@@ -161,11 +161,39 @@ $(function() {
 
         $('.js-equalSplit').click(function(event) {
             equalSplit();
+        });        
+
+    }
+
+    function displayBillsWfriend(userFriendId) {
+        var mockBillsWfriend = [
+            {
+                date: "12-01-2016",
+                discription: "rent",
+                amount: -1250
+            },
+            {
+                date: "12-05-2016",
+                discription: "Water Bill",
+                amount: -45
+            },
+            {
+                date: "12-13-2016",
+                discription: "Movie Ticket",
+                amount: 17.5
+            }
+        ];
+        
+        var balance = 0;
+
+        $('main').html('<p>Your transactions with ' + userFriendId + ':</p>');
+        mockBillsWfriend.forEach(function(bill) {
+            $('main').append(
+                '<div><span>' + bill.date + '   </span><span>' + bill.discription + '   </span><span>$' + bill.amount + '</span><br>'
+            );
+            balance = balance + bill.amount;
         });
-
-        
-        
-
+        $('main').append('<p>The balance is: $' + balance + '.</p>');
     }
 
     function addNewFriend() {
@@ -186,7 +214,7 @@ $(function() {
         $('main').html('<p>Your bill splits summary:</p>');
         var currentUserFriendList = data.MOCK_USERS[0].friendList;
         currentUserFriendList.forEach(function(usersFriend) {
-            $('main').append('<p>' + usersFriend.fullName + ':  $' + usersFriend.balance + '   <button>See Log</button></p>');
+            $('main').append('<div userFriendId="' + usersFriend.id + '">' + usersFriend.fullName + ':  $' + usersFriend.balance + '   <button class="js-checkFriendBillLog">See Log</button></div>');
         });
         $('main').append('<button class="js-addNewFriend">Add a new user to your list</button></br>');
         $('main').append('<button class="js-addNewBill">Add a new bill</button>');
@@ -195,6 +223,12 @@ $(function() {
         });
         $('.js-addNewBill').click(function(event) {
             addNewBill(data.MOCK_USERS[0]);
+        });
+
+        $('.js-checkFriendBillLog').click(function(event) {
+            var userFriendId = $(this).closest('div').attr('userFriendId');
+            console.log('userFriendId');
+            displayBillsWfriend(userFriendId);
         });
     }
 
