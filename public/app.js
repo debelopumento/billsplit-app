@@ -68,9 +68,6 @@ $(function() {
                     }
                 ]
             };
-        
-
-
 
         $('main').html('<p>Add a new bill</p>');
         $('main').append('<form class="js-billDetailsInput">' +
@@ -188,9 +185,9 @@ $(function() {
         $('nav').html('<h4>Hello, ' + data.MOCK_USERS[0].fullName + '</h4>');
         $('main').html('<p>Your bill splits summary:</p>');
         var currentUserFriendList = data.MOCK_USERS[0].friendList;
-        for (index in currentUserFriendList) {
-            $('main').append('<p>' + currentUserFriendList[index].fullName + ':  $' + currentUserFriendList[index].balance + '   <button>See Log</button></p>');
-        }
+        currentUserFriendList.forEach(function(usersFriend) {
+            $('main').append('<p>' + usersFriend.fullName + ':  $' + usersFriend.balance + '   <button>See Log</button></p>');
+        });
         $('main').append('<button class="js-addNewFriend">Add a new user to your list</button></br>');
         $('main').append('<button class="js-addNewBill">Add a new bill</button>');
         $('.js-addNewFriend').click(function(event) {
