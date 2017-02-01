@@ -113,9 +113,8 @@ $(function() {
 
 
         function addFriendToBill(addFriendName, addSplitAmount) {
-            var friendId = "username=userE";
             var addedFriend = {
-                splitterId: friendId,
+                splitterId: "id-" + addFriendName,
                 name: addFriendName,
                 splitAmount: addSplitAmount
             };
@@ -144,8 +143,6 @@ $(function() {
                 '<button class="js-addaSplitter">Add</button><br>'
             );
 
-            
-        
 
             $('.js-currentBillFriendList').append('<button>Submit</button>');
 
@@ -157,17 +154,19 @@ $(function() {
                 console.log(25, updatedSplitAmount, updatedPersonUsername);
                 updateCurrentBill(updatedSplitAmount, updatedPersonUsername);
             });
+            console.log(18);
+            $('.js-addaSplitter').click(function(event) {
+            var addFriendName = $('.js-addFriendName').val();
+            var addSplitAmount = $('.js-addSplitAmount').val();
+            addFriendToBill(addFriendName, addSplitAmount);
+        });
         }
 
         $('.js-equalSplit').click(function(event) {
             equalSplit();
         });
 
-        $('.js-addaSplitter').click(function(event) {
-            var addFriendName = $('.js-addFriendName').val();
-            var addSplitAmount = $('.js-addSplitAmount').val();
-            addFriendToBill(addFriendName, addSplitAmount);
-        });
+        
         
 
     }
