@@ -14,12 +14,12 @@ $(function() {
                          balance: 29.30,
                          billHistory: [
                             {billId: "bill-id-A",
-                            discription: "Friday Dinner",
+                            description: "Friday Dinner",
                             date: "October 13, 2016 11:13:00",
                             amount: 13.00
                             },
                             {billId: "bill-id-B",
-                            discription: "water bill",
+                            description: "water bill",
                             date: "October 13, 2016 11:13:00",
                             amount: 16.30
                             }
@@ -30,12 +30,12 @@ $(function() {
                          balance: -29.30,
                          billHistory: [
                             {billId: "bill-id-C",
-                            discription: "Thursday night clubbing drink",
+                            description: "Thursday night clubbing drink",
                             date: "October 13, 2016 11:13:00",
                             amount: -13.00
                             },
                             {billId: "bill-id-D",
-                            discription: "Uber",
+                            description: "Uber",
                             date: "October 13, 2016 11:13:00",
                             amount: -16.30
                             }
@@ -165,21 +165,67 @@ $(function() {
 
     }
 
+
+    function editBill() {
+        var bill = {
+            id: "bill-id-A",
+            date: Date(),
+            description: "Rent",
+            totalAmount: 2500,
+            splitAmount: 1250,
+            memo: "pay by: 12-15-2016"
+        };
+        $('main').html('<form></form>');
+        $('form').append(
+            'Date: <input type="date" value="' + bill.date + '"><br>' +
+            'Description: <input type="text" value="' + bill.description + '"><br>' +
+            'Total Amount: <input type="number" value="' + bill.totalAmount + '"><br>' +
+            'Your Split: <input type="number" value="' + bill.splitAmount + '"><br>' +
+            'Memo: <input type="text" value="' + bill.memo + '"><br>' +
+            '<button class="js-updateBillDetails">Submit</button>'
+        );
+        $('.js-updateBillDetails').click(function(event) {
+            displayBillDetails();
+        });
+    }
+
+    function displayBillDetails() {
+        var bill = {
+            id: "bill-id-A",
+            date: "12-01-2016",
+            description: "Rent",
+            totalAmount: 2500,
+            splitAmount: 1250,
+            memo: "pay by: 12-15-2016"
+        };
+        $('main').html('<p>Bill Details:</p>');
+        $('main').append('<p>Date: ' + bill.date + '</p>' +
+            '<p>Description: ' + bill.description + '</p>' +
+            '<p>Total Amount: ' + bill.totalAmount + '</p>' +
+            '<p>Your Split: ' + bill.splitAmount + '</p>' +
+            '<p>Memo: ' + bill.memo + '</p>' +
+            '<button class="js-editBill">Edit this bill</button>'
+        );
+        $('.js-editBill').click(function(event) {
+            editBill();
+        });
+    }
+
     function displayBillsWfriend(userFriendId) {
         var mockBillsWfriend = [
             {
                 date: "12-01-2016",
-                discription: "rent",
+                description: "rent",
                 amount: -1250
             },
             {
                 date: "12-05-2016",
-                discription: "Water Bill",
+                description: "Water Bill",
                 amount: -45
             },
             {
                 date: "12-13-2016",
-                discription: "Movie Ticket",
+                description: "Movie Ticket",
                 amount: 17.5
             }
         ];
@@ -189,11 +235,14 @@ $(function() {
         $('main').html('<p>Your transactions with ' + userFriendId + ':</p>');
         mockBillsWfriend.forEach(function(bill) {
             $('main').append(
-                '<div><span>' + bill.date + '   </span><span>' + bill.discription + '   </span><span>$' + bill.amount + '</span><br>'
+                '<div><span>' + bill.date + '   </span><span>' + bill.description + '   </span><span>$' + bill.amount + '</span><button class="js-checkBillDetails">Edit/See Details</button><br>'
             );
             balance = balance + bill.amount;
         });
         $('main').append('<p>The balance is: $' + balance + '.</p>');
+        $('.js-checkBillDetails').click(function(event) {
+            displayBillDetails();
+        });
     }
 
     function addNewFriend() {
