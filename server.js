@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 require('dotenv').config();
 
+const {router: usersRouter} = require('./users');
 
 mongoose.Promise = global.Promise;
 
@@ -14,7 +15,11 @@ const {Bills} = require('./models');
 const app = express();
 app.use(bodyParser.json());
 app.use(morgan('common'));
+app.use('/users/', usersRouter);
 
+app.use('*', function(req, res) {
+  return res.status(404).json({message: 'Not Found'});
+});
 
 app.get('/bills', (req, res) => {
   Bills
