@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
 
+
 const UserSchema = mongoose.Schema({
-  id: {type: String, required: true},
   username: {
     type: String,
     required: true,
@@ -14,12 +14,11 @@ const UserSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  fullName: String,
+  fullName: {type: String, default: ""}
 });
 
 UserSchema.methods.apiRepr = function() {
   return {
-    id: this._id,
     username: this.username || '',
     fullName: this.fullName || ''
   };
