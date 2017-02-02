@@ -17,9 +17,7 @@ app.use(bodyParser.json());
 app.use(morgan('common'));
 app.use('/users/', usersRouter);
 
-app.use('*', function(req, res) {
-  return res.status(404).json({message: 'Not Found'});
-});
+
 
 app.get('/bills', (req, res) => {
   Bills
