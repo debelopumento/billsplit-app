@@ -51,7 +51,7 @@ app.get('/bills/:id', (req, res) => {
 
 app.post('/bills', (req, res) => {
 
-  const requiredFields = ['billDate', 'totalAmount', 'users'];
+  const requiredFields = ['totalAmount', 'users'];
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i];
     if (!(field in req.body)) {
@@ -64,8 +64,17 @@ app.post('/bills', (req, res) => {
   Bills
     .create({
       billDate: req.body.billDate,
+      description: req.body.description,
       totalAmount: req.body.totalAmount,
-      users: req.body.users})
+      users: req.body.users,
+      postedTime: req.body.postedTime,
+      postedBy: req.body.postedBy,
+      paid: req.body.paid,
+      paidByUser: req.body.paidByUser,
+      dueDay: req.body.dueDay,
+      paidOff: req.body.paidOff,
+      memo: req.body.memo
+    })
     .then(
       bills => res.status(201).json(bills.apiRepr()))
     .catch(err => {
