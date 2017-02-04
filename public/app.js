@@ -216,48 +216,77 @@ function login(user) {
     }
 
 
-    function editBill() {
-        var bill = {
-            id: "bill-id-A",
-            date: Date(),
-            description: "Rent",
-            totalAmount: 2500,
-            splitAmount: 1250,
-            memo: "pay by: 12-15-2016"
-        };
-        $('main').html('<form></form>');
-        $('form').append(
-            'Date: <input type="date" value="' + bill.date + '"><br>' +
-            'Description: <input type="text" value="' + bill.description + '"><br>' +
-            'Total Amount: <input type="number" value="' + bill.totalAmount + '"><br>' +
-            'Your Split: <input type="number" value="' + bill.splitAmount + '"><br>' +
-            'Memo: <input type="text" value="' + bill.memo + '"><br>' +
-            '<button class="js-updateBillDetails">Submit</button>'
-        );
-        $('.js-updateBillDetails').click(function(event) {
-            displayBillDetails();
+    function editBill(billId) {
+        function renderEditBillForm(bill) {
+            $('main').html('<form></form>');
+            $('form').append(
+                'Bill Date: <input class="billdate" type="date" value="' + bill.billDate + '"><br>' +
+                'Description: <input class="billdescription" type="text" value="' + bill.description + '"><br>' +
+                'Total Amount: <input class="billTotalAmount" type="number" value="' + bill.totalAmount + '"><br>');
+            bill.users.forEach(function(user) {
+                $('form').append('<input type="text" value="' + user.fullName + '"><input type="number" value="' + user.splitAmount + '"><br>');
+            })
+            $('form').append('Paid by:<input type="text" value="' + bill.paidByUser.fullName + '"><br>');
+            $('form').append('Due: <input type="date" value="' + bill.dueDay + '"><br>');
+            $('form').append('Memo: <input type="text" value="' + bill.memo + '"><br>' +
+                '<button class="js-updateBillDetails">Submit</button>'
+            );
+
+            $('.js-updateBillDetails').click(function(event) {
+                console.log("haha");
+                bill.billDate = $('.billDate').val();
+                bill.description = $('.billdescription').val();
+                bill.totalAmount = $('.billTotalAmount').val();
+                $.put({
+                    url: 'http://localhost:8080/bills/' + billId,
+                    data: bill,
+                    success: function (data) {
+                        console.log('success!');
+                    }
+                });
+            });
+        }        
+        $.get({
+            url: 'http://localhost:8080/bills/' + billId,
+            success: function(data) {
+                    renderEditBillForm(data);
+            },
+                fail: function() {
+                    console.log('failed');
+                }
         });
+
+        
     }
 
     function getAndDisplayBillDetails(billId) {
         function displayBill(bill) {
-            
-
             $('main').html('<p>Bill Details:</p>');
             $('main').append('<p>Date: ' + bill.billDate + '</p>' +
             '<p>Description: ' + bill.description + '</p>' +
-            '<p>Total Amount: ' + bill.totalAmount + '</p>');
+            '<p>Total Amount: ' + bill.totalAmount + '</p>') +
+            '<p>Bill splits: </p>';
             bill.users.forEach(function(user) {
-                if (user._id === userId) {
-                    $('main').append('<p>Your Split: ' + user.splitAmount + '</p>');
+                if (user.userId === userId) {
+                    $('main').append('<p>Your Split: $' + user.splitAmount + '</p>');
                 }
+                    else {
+                        $('main').append('<p>' + user.fullName + ': $' + user.splitAmount + '</p>');
+                    }
             });
+            //who paid for the bill?
+            if (bill.paidByUser.userId === userId) {
+                $('main').append('<p>You paid for this bill.</p>');
+            }
+                else {
+                    $('main').append('<p>' + bill.paidByUser.fullName + ' paid for this bill.</p>');
+                }
 
-
-            ('main').append('<p>Memo: ' + bill.memo + '</p>' +
+            $('main').append('<p>Due on: ' + bill.dueDay + '</p>');
+            $('main').append('<p>Memo: ' + bill.memo + '</p>' +
                 '<button class="js-editBill">Edit this bill</button>');
             $('.js-editBill').click(function(event) {
-                editBill();
+                editBill(billId);
             });
         }
 
