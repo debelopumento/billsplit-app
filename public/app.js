@@ -1,11 +1,5 @@
 
 $(function() {
-    function authenticate() {
-        console.log(4);
-
-    }
-
-    function initialize() {
         $('header').toggleClass("hidden");
         var row = '';
         row += '<p>Hello!</p><br>';
@@ -15,9 +9,7 @@ $(function() {
         row += '<p>New User?</p>';
         row += '<button class="js-register">Register</button>';
         $('main').html(row);
-        console.log(7);
         $('.js-login').click(function() {
-            console.log(6);
             var usernameInput = $('.username').val();
             var passwordInput = $('.password').val();
             console.log(5, usernameInput, passwordInput);
@@ -30,24 +22,16 @@ $(function() {
                     'Authorization': 'Basic ' + btoa(usernameInput + ':' + passwordInput)
                 },
                 url: loginURL,
-                success: function(data) {
-                    console.log(data);
+                success: function(signedInUser) {
+                    console.log(signedInUser);
+                    login(signedInUser);
                 },
                 fail: function() {
                     console.log('wrong password');
                 }
             });
-
         });
-    }
-
-    initialize();
-    //authenticate();
-
-
 });
-
-
 
 
 
@@ -64,8 +48,11 @@ $(function() {
 */
 
 
-/*
-$(function login() {
+
+function login(signedInUser) {
+    var userId = signedInUser.user.id;
+    var userFullName = signedInUser.user.fullName;
+    console.log('hello, ', userFullName);
     $('header').toggleClass("hidden");
 	var MOCK_DATA = {
             MOCK_USERS: [
@@ -351,6 +338,5 @@ $(function login() {
         getBillSplitsSummary(displayBillSplitsSummary);
     })
 
-});
-*/
+}
 
