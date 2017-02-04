@@ -23,7 +23,6 @@ $(function() {
                 },
                 url: loginURL,
                 success: function(signedInUser) {
-                    console.log(88, signedInUser);
                     login(signedInUser);
                 },
                 fail: function() {
@@ -52,7 +51,6 @@ $(function() {
 function login(user) {
     var userId = user.user.id;
     var userFullName = user.user.fullName;
-    var signedInUser = user;
     console.log('hello, ', userFullName);
     $('header').toggleClass("hidden");
 	var MOCK_DATA = {
@@ -241,60 +239,78 @@ function login(user) {
         });
     }
 
-    function displayBillDetails() {
-        var bill = {
-            id: "bill-id-A",
-            date: "12-01-2016",
-            description: "Rent",
-            totalAmount: 2500,
-            splitAmount: 1250,
-            memo: "pay by: 12-15-2016"
-        };
-        $('main').html('<p>Bill Details:</p>');
-        $('main').append('<p>Date: ' + bill.date + '</p>' +
+    function getAndDisplayBillDetails(billId) {
+        function displayBill(bill) {
+            
+
+            $('main').html('<p>Bill Details:</p>');
+            $('main').append('<p>Date: ' + bill.billDate + '</p>' +
             '<p>Description: ' + bill.description + '</p>' +
-            '<p>Total Amount: ' + bill.totalAmount + '</p>' +
-            '<p>Your Split: ' + bill.splitAmount + '</p>' +
-            '<p>Memo: ' + bill.memo + '</p>' +
-            '<button class="js-editBill">Edit this bill</button>'
-        );
-        $('.js-editBill').click(function(event) {
-            editBill();
+            '<p>Total Amount: ' + bill.totalAmount + '</p>');
+            bill.users.forEach(function(user) {
+                if (user._id === userId) {
+                    $('main').append('<p>Your Split: ' + user.splitAmount + '</p>');
+                }
+            });
+
+
+            ('main').append('<p>Memo: ' + bill.memo + '</p>' +
+                '<button class="js-editBill">Edit this bill</button>');
+            $('.js-editBill').click(function(event) {
+                editBill();
+            });
+        }
+
+
+        $.get({
+            url: 'http://localhost:8080/bills/' + billId,
+            success: function(data) {
+                    console.log(123, data);
+                    displayBill(data);
+            },
+                fail: function() {
+                    console.log('failed');
+                }
         });
+        
     }
 
     function displayBillsWfriend(friendId, friendName) {
-        var mockBillsWfriend = [
-            {
-                date: "12-01-2016",
-                description: "rent",
-                amount: -1250
+        $.get({
+            url: 'http://localhost:8080/bills-user/' + userId + '/' + friendId,
+            success: function(data) {
+                    console.log(12, data);
+                    displayTransactionHistories(data);
             },
-            {
-                date: "12-05-2016",
-                description: "Water Bill",
-                amount: -45
-            },
-            {
-                date: "12-13-2016",
-                description: "Movie Ticket",
-                amount: 17.5
-            }
-        ];
-        
-        var balance = 0;
+                fail: function() {
+                    console.log('wrong password');
+                }
+        });
 
-        $('main').html('<p>Your transactions with ' + friendName + ':</p>');
-        mockBillsWfriend.forEach(function(bill) {
-            $('main').append(
-                '<div><span>' + bill.date + '   </span><span>' + bill.description + '   </span><span>$' + bill.amount + '</span><button class="js-checkBillDetails">Edit/See Details</button><br>'
-            );
-            balance = balance + bill.amount;
-        });
-        $('main').append('<p>The balance is: $' + balance + '.</p>');
-        $('.js-checkBillDetails').click(function(event) {
-            displayBillDetails();
-        });
+        function displayTransactionHistories(data) {
+            $('main').html('<p>Your transactions with ' + friendName + ':</p>');
+            console.log(150, data);
+            var balance = 0;
+            data.bills.forEach(function(bill) {
+                bill.users.forEach(function(user) {
+                    if (user.userId === userId) {
+                        var userOwe = user.splitAmount;
+                        console.log(89, bill);
+                        $('main').append('<div billId="' + bill.id + '"><span>' + bill.billDate + '   </span><span>' + bill.description + '   </span><span>$' + userOwe + '</span><button class="js-checkBillDetails">Edit/See Details</button><br>');
+                    }
+                });
+
+                
+                //balance = balance + bill.amount;
+            });
+            //$('main').append('<p>The balance is: $' + balance + '.</p>');
+            $('.js-checkBillDetails').click(function(event) {
+                
+                var cuurentBillId = $(this).closest('div').attr('billId');
+                getAndDisplayBillDetails(cuurentBillId);
+            });
+        }   
+
     }
 
     function addNewFriend() {
@@ -314,15 +330,15 @@ function login(user) {
 
 
     function displayBillSplitsSummary() {
-        console.log(14, signedInUser);
+        console.log(14, user);
 
         $('nav').html('<h4>Hello, ' + userFullName + '</h4>');
         $('main').html('<p>Your bill splits summary:</p>');
-        var friendList = signedInUser.user.friends;
+        var friendList = user.user.friends;
         console.log(12, friendList);
         friendList.forEach(function(friend) {
             console.log("friend: ", friend);
-            $('main').append('<div userFriendId="' + friend._id + '" friendName="' + friend.fullName + '">' + friend.fullName + ':  $' + friend.balance + '   <button class="js-checkFriendBillLog">See Log</button></div>');
+            $('main').append('<div userFriendId="' + friend._id + '" friendName="' + friend.fullname + '">' + friend.fullname + ':  $' + friend.balance + '   <button class="js-checkFriendBillLog">See Log</button></div>');
         });
         $('main').append('<button class="js-addNewFriend">Add a new user to your list</button></br>');
         $('main').append('<button class="js-addNewBill">Add a new bill</button>');
@@ -334,14 +350,14 @@ function login(user) {
         });
 
         $('.js-checkFriendBillLog').click(function(event) {
-            var userFriendId = $(this).closest('div').attr('userFriendId');
-            var userFriendName = $(this).closest('div').attr('friendName');
-            console.log(22, userFriendId, ' ', userFriendName);
-            displayBillsWfriend(userFriendId, userFriendName);
+            var friendId = $(this).closest('div').attr('userFriendId');
+            var friendName = $(this).closest('div').attr('friendName');
+            //console.log(22, friendId, ' ', friendName);
+            displayBillsWfriend(friendId, friendName);
         });
     }
-    console.log(11, signedInUser);
-    displayBillSplitsSummary(signedInUser);
+    console.log(11, user);
+    displayBillSplitsSummary(user);
 
     $('.js-goToMainPage').click(function(event) {
         displayBillSplitsSummary();    

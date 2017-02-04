@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/index.html');
 });
 
-/*
+
 //all bills in db
 app.get('/bills', (req, res) => {
   Bills
@@ -43,7 +43,7 @@ app.get('/bills', (req, res) => {
         res.status(500).json({message: 'Internal server error'});
     });
 });
-*/
+
 
 //search one bill by its Id
 app.get('/bills/:id', (req, res) => {
@@ -70,10 +70,31 @@ app.get('/bills-user/:userId', (req, res) => {
     });
 });
 
+
+/*
 //show bill splits between two friends
 app.get('/bills-user/:userId/:friendId', (req, res) => {
   Bills
-    .find({$and: [{users: {$elemMatch: {userId: req.params.userId}}}, {users: {$elemMatch: {userId: req.params.friendId}}}]})
+    //.find({$and: [{users: {$elemMatch: {userId: req.params.userId}}}, {paidByUser: {$elemMatch: {userId: req.params.friendId}}}]})
+    .find({$and: [{users: {$elemMatch: {userId: req.params.userId}}}, {paidByUser: {$elemMatch: {userId: req.params.friendId}}}]})
+
+    .exec()
+    .then(bills => res.json(
+          {bills: bills.map(bill => bill.apiRepr())
+    }))
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({message: 'Internal server error'})
+    });
+});
+*/
+
+
+app.get('/bills-user/:userId/:friendId', (req, res) => {
+  Bills
+    //.find({$and: [{users: {$elemMatch: {userId: req.params.userId}}}, {paidByUser: {$elemMatch: {userId: req.params.friendId}}}]})
+    .find({$and: [{users: {$elemMatch: {userId: req.params.userId}}}, {"paidByUser.userId": req.params.friendId}]})
+
     .exec()
     .then(bills => res.json(
           {bills: bills.map(bill => bill.apiRepr())
@@ -84,9 +105,7 @@ app.get('/bills-user/:userId/:friendId', (req, res) => {
     });
 });
 
-
 app.post('/bills', (req, res) => {
-
   const requiredFields = ['totalAmount', 'users'];
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i];

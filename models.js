@@ -10,9 +10,13 @@ const billsSchema = mongoose.Schema({
            splitAmount: {type: Number, required: true}
     }],
   postedTime: {type: Date, default: Date.now},
-  postedBy: {type: String, required: true},
+  postedBy: {userId: {type: String, required: true}, 
+      fullName: String
+  },
   paid: {type: Boolean, required: true},
-  paidByUser: String,
+  paidByUser: {userId: {type: String, required: true}, 
+      fullName: String
+  },
   dueDay: Date,
   paidOff: {type: Boolean, required: true},
   memo: String
