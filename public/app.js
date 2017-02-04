@@ -3,8 +3,8 @@ $(function() {
         $('header').toggleClass("hidden");
         var row = '';
         row += '<p>Hello!</p><br>';
-        row += '<input class="username" type="text" placeholder="username"><br>';
-        row += '<input class="password" type="password" placeholder="passW0rd">';
+        row += '<input class="username" type="text" value="username-userA"><br>';
+        row += '<input class="password" type="password" value="password-userA">';
         row += '<button class="js-login">Login</button>';
         row += '<p>New User?</p>';
         row += '<button class="js-register">Register</button>';
@@ -23,7 +23,7 @@ $(function() {
                 },
                 url: loginURL,
                 success: function(signedInUser) {
-                    console.log(signedInUser);
+                    console.log(88, signedInUser);
                     login(signedInUser);
                 },
                 fail: function() {
@@ -49,9 +49,10 @@ $(function() {
 
 
 
-function login(signedInUser) {
-    var userId = signedInUser.user.id;
-    var userFullName = signedInUser.user.fullName;
+function login(user) {
+    var userId = user.user.id;
+    var userFullName = user.user.fullName;
+    var signedInUser = user;
     console.log('hello, ', userFullName);
     $('header').toggleClass("hidden");
 	var MOCK_DATA = {
@@ -262,7 +263,7 @@ function login(signedInUser) {
         });
     }
 
-    function displayBillsWfriend(userFriendId) {
+    function displayBillsWfriend(friendId, friendName) {
         var mockBillsWfriend = [
             {
                 date: "12-01-2016",
@@ -283,7 +284,7 @@ function login(signedInUser) {
         
         var balance = 0;
 
-        $('main').html('<p>Your transactions with ' + userFriendId + ':</p>');
+        $('main').html('<p>Your transactions with ' + friendName + ':</p>');
         mockBillsWfriend.forEach(function(bill) {
             $('main').append(
                 '<div><span>' + bill.date + '   </span><span>' + bill.description + '   </span><span>$' + bill.amount + '</span><button class="js-checkBillDetails">Edit/See Details</button><br>'
@@ -304,17 +305,24 @@ function login(signedInUser) {
         );
     }
 
+
+    /*
     function getBillSplitsSummary(callbackFn) {
         setTimeout(function(){ callbackFn(MOCK_DATA)}, 1);
     }
+    */
 
 
-    function displayBillSplitsSummary(data) {
-        $('nav').html('<h4>Hello, ' + data.MOCK_USERS[0].fullName + '</h4>');
+    function displayBillSplitsSummary() {
+        console.log(14, signedInUser);
+
+        $('nav').html('<h4>Hello, ' + userFullName + '</h4>');
         $('main').html('<p>Your bill splits summary:</p>');
-        var currentUserFriendList = data.MOCK_USERS[0].friendList;
-        currentUserFriendList.forEach(function(usersFriend) {
-            $('main').append('<div userFriendId="' + usersFriend.id + '">' + usersFriend.fullName + ':  $' + usersFriend.balance + '   <button class="js-checkFriendBillLog">See Log</button></div>');
+        var friendList = signedInUser.user.friends;
+        console.log(12, friendList);
+        friendList.forEach(function(friend) {
+            console.log("friend: ", friend);
+            $('main').append('<div userFriendId="' + friend._id + '" friendName="' + friend.fullName + '">' + friend.fullName + ':  $' + friend.balance + '   <button class="js-checkFriendBillLog">See Log</button></div>');
         });
         $('main').append('<button class="js-addNewFriend">Add a new user to your list</button></br>');
         $('main').append('<button class="js-addNewBill">Add a new bill</button>');
@@ -327,15 +335,16 @@ function login(signedInUser) {
 
         $('.js-checkFriendBillLog').click(function(event) {
             var userFriendId = $(this).closest('div').attr('userFriendId');
-            console.log('userFriendId');
-            displayBillsWfriend(userFriendId);
+            var userFriendName = $(this).closest('div').attr('friendName');
+            console.log(22, userFriendId, ' ', userFriendName);
+            displayBillsWfriend(userFriendId, userFriendName);
         });
     }
-
-    getBillSplitsSummary(displayBillSplitsSummary);
+    console.log(11, signedInUser);
+    displayBillSplitsSummary(signedInUser);
 
     $('.js-goToMainPage').click(function(event) {
-        getBillSplitsSummary(displayBillSplitsSummary);
+        displayBillSplitsSummary();    
     })
 
 }
