@@ -2,6 +2,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
+
 require('dotenv').config();
 
 const {router: usersRouter} = require('./users');
@@ -16,7 +17,12 @@ const app = express();
 app.use(bodyParser.json());
 app.use(morgan('common'));
 app.use('/users/', usersRouter);
+app.use(express.static('public'));
 
+
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html');
+});
 
 
 app.get('/bills', (req, res) => {
@@ -37,6 +43,8 @@ app.get('/bills', (req, res) => {
     });
 });
 
+
+
 app.get('/bills/:id', (req, res) => {
   Bills
     .findById(req.params.id)
@@ -47,6 +55,33 @@ app.get('/bills/:id', (req, res) => {
         res.status(500).json({message: 'Internal server error'})
     });
 });
+
+app.get('/bills', (req, res) => {
+  /*
+  const filters = {};
+  const queryableFields = ['totalAmount'];
+  queryableFields.forEach(field => {
+    if (req.query[field]) {
+      filters[field] = req.query[field];
+    }
+  });
+
+  */
+
+  const friendList = [];
+
+  Bills
+    .find({users: {$elemMatch: {userId: { $in: ["58940223734d1d3956c37cd6", "58940212734d1d3956c37cd3"]}}}})
+    .exec()
+    .then(bills => res.json(
+          {bills: bills.map(bill => bill.apiRepr())
+    }))
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({message: 'Internal server error'})
+    });
+});
+
 
 
 app.post('/bills', (req, res) => {
@@ -76,7 +111,7 @@ app.post('/bills', (req, res) => {
       memo: req.body.memo
     })
     .then(
-      bills => res.status(201).json(bills.apiRepr()))
+      bill => res.status(201).json(bill.apiRepr()))
     .catch(err => {
       console.error(err);
       res.status(500).json({message: 'Internal server error'});

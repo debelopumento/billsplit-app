@@ -1,8 +1,72 @@
 
-
-
-
 $(function() {
+    function authenticate() {
+        console.log(4);
+
+    }
+
+    function initialize() {
+        $('header').toggleClass("hidden");
+        var row = '';
+        row += '<p>Hello!</p><br>';
+        row += '<input class="username" type="text" placeholder="username"><br>';
+        row += '<input class="password" type="password" placeholder="passW0rd">';
+        row += '<button class="js-login">Login</button>';
+        row += '<p>New User?</p>';
+        row += '<button class="js-register">Register</button>';
+        $('main').html(row);
+        console.log(7);
+        $('.js-login').click(function() {
+            console.log(6);
+            var usernameInput = $('.username').val();
+            var passwordInput = $('.password').val();
+            console.log(5, usernameInput, passwordInput);
+            var loginURL = "http://localhost:8080/users/me";
+            $.ajax({
+                xhrFields: {
+                    withCredentials: true
+                },
+                headers: {
+                    'Authorization': 'Basic ' + btoa(usernameInput + ':' + passwordInput)
+                },
+                url: loginURL,
+                success: function(data) {
+                    console.log(data);
+                },
+                fail: function() {
+                    console.log('wrong password');
+                }
+            });
+
+        });
+    }
+
+    initialize();
+    //authenticate();
+
+
+});
+
+
+
+
+
+/*
+//get all the bills in database
+$(function() {
+    //var mlabUrl = "https://api.mlab.com/api/1/databases/billsdb/collections/billscollection?apiKey=VIJVGMOkT5Cc88A3_FjbAJ0jeEa1AJAo";
+    var dbUrl = "http://localhost:8080/bills";
+    $.get(dbUrl, function(data) {
+        console.log(data);
+    });
+});
+
+*/
+
+
+/*
+$(function login() {
+    $('header').toggleClass("hidden");
 	var MOCK_DATA = {
             MOCK_USERS: [
                 {
@@ -288,3 +352,5 @@ $(function() {
     })
 
 });
+*/
+
