@@ -292,17 +292,39 @@ function login(user) {
             console.log(150, data);
             var balance = 0;
             data.bills.forEach(function(bill) {
-                bill.users.forEach(function(user) {
-                    if (user.userId === userId) {
-                        var userOwe = user.splitAmount;
-                        console.log(89, bill);
-                        $('main').append('<div billId="' + bill.id + '"><span>' + bill.billDate + '   </span><span>' + bill.description + '   </span><span>$' + userOwe + '</span><button class="js-checkBillDetails">Edit/See Details</button><br>');
-                    }
-                });
+                //If friend paid for the bill
+                if (bill.paidByUser.userId != userId) {
+                    bill.users.forEach(function(user) {
+                        if (user.userId === userId) {
+                            var userOwe = user.splitAmount;
+                            console.log(89, bill);
+                            $('main').append('<div billId="' + bill.id + '"><span>' + bill.billDate + '   </span><span>' + bill.description + '   </span><span>You owe: $' + userOwe + '</span><button class="js-checkBillDetails">Edit/See Details</button><br>');
+                            balance = balance - userOwe;
+                        }
+                });}
 
-                
-                //balance = balance + bill.amount;
+                //If user paid for the bill, friend owes user money
+                if (bill.paidByUser.userId === userId) {
+                    bill.users.forEach(function(user) {
+                        if (user.userId === friendId) {
+                            var friendOwe = user.splitAmount;
+                            $('main').append('<div billId="' + bill.id + '"><span>' + bill.billDate + '   </span><span>' + bill.description + '   </span>' + friendName  + '<span> owes you: $' + friendOwe + '</span><button class="js-checkBillDetails">Edit/See Details</button><br>');
+                            balance = balance + friendOwe;
+                        }
+                    });
+                }
             });
+            console.log(232, balance);
+            if (balance === 0) {
+                $('main').append('<p>You two are even.</p>');
+            }
+            if (balance > 0) {
+                $('main').append('<p>' + friendName + 'owes you: $' + balance + '</p>');
+            }
+            if (balance < 0) {
+                console.log('hello');
+                $('main').append('<p>You owe ' + friendName + ' $' + (-balance) + '</p>');
+            }
             //$('main').append('<p>The balance is: $' + balance + '.</p>');
             $('.js-checkBillDetails').click(function(event) {
                 
