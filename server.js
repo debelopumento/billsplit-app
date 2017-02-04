@@ -57,9 +57,9 @@ app.get('/bills/:id', (req, res) => {
     });
 });
 
-app.get('/bills-user/:user', (req, res) => {
+app.get('/bills-user/:userId', (req, res) => {
   Bills
-    .find({users: {$elemMatch: {userId: { $in: [req.params.user]}}}})
+    .find({users: {$elemMatch: {userId: req.params.userId}}})
     .exec()
     .then(bills => res.json(
           {bills: bills.map(bill => bill.apiRepr())
@@ -70,6 +70,19 @@ app.get('/bills-user/:user', (req, res) => {
     });
 });
 
+//show bill splits between two friends
+app.get('/bills-user/:userId/:friendId', (req, res) => {
+  Bills
+    .find({$and: [{users: {$elemMatch: {userId: req.params.userId}}}, {users: {$elemMatch: {userId: req.params.friendId}}}]})
+    .exec()
+    .then(bills => res.json(
+          {bills: bills.map(bill => bill.apiRepr())
+    }))
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({message: 'Internal server error'})
+    });
+});
 
 
 app.post('/bills', (req, res) => {
