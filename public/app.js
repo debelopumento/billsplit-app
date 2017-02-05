@@ -111,9 +111,12 @@ function login(user) {
                      fullName: userFullName,
                      splitAmount: 0
                     }
-                ]
+                ],
+                postedTime: Date(),
+                paidByUser: {userId: "", fullName: ""},
+                padiOff: false,
+                memo: ""
             };
-        console.log(45, currentBill.billDate);
         $('main').html('<p>Add a new bill</p>');
         $('main').append('<form class="js-billDetailsInput">' +
             //'Date <input type="date" name="billDate" value="' + currentBill.billDate + '"><br>' +
@@ -179,7 +182,6 @@ function login(user) {
         });  
 
         $('.js-sumbitNewBill').click(function(event) {
-                console.log(98, currentBill.users.length);
                 currentBill.description = $('.js-billDescription').val();
                 currentBill.totalAmount = $('.js-billTotalAmount').val();
                 //get bill split info
@@ -189,11 +191,22 @@ function login(user) {
                     var spliAmountKey = '.billSplitAmount-index-' + index;
                     splitter.userId = $(idKey).val();
                     splitter.splitAmount = $(spliAmountKey).val();
-                    console.log(120, index, splitter);
                     index = index + 1;
                 });
-                console.log(100, currentBill); 
-
+                console.log(100, currentBill);
+                $.ajax({
+                    type: "POST",
+                    url: "http://localhost:8080/bills/",
+                    data: JSON.stringify(currentBill),
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function(data) {
+                        console.log(800, data);
+                    },
+                    error: function(e) {
+                        console.log(e);
+                    }
+                });
         });      
 
     }
