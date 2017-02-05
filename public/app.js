@@ -117,26 +117,14 @@ function login(user) {
         $('main').html('<p>Add a new bill</p>');
         $('main').append('<form class="js-billDetailsInput">' +
             //'Date <input type="date" name="billDate" value="' + currentBill.billDate + '"><br>' +
-            'Description <input type="text" name="billDescription"><br>' +
-            'Total Amount <input type="number" id="js-billTotalAmount" min="0"><br></form>'
+            'Description <input type="text" class="js-billDescription"><br>' +
+            'Total Amount <input type="number" class="js-billTotalAmount" min="0"><br></form>'
         );
         $('main').append('<div><button class="js-equalSplit">Equal Split</button></div>' + 
             '<div class="js-currentBillFriendList"></div>'
         );
         renderCurrentBillSplitList();
-
-        inputBillTotal = document.getElementById('js-billTotalAmount');
-        function updateBillTotal() {
-            var currentBillTotal = inputBillTotal.value;
-            console.log(10, currentBillTotal);
-            currentBill.totalAmount = currentBillTotal;
-            
-            renderCurrentBillSplitList();
-        }
-        inputBillTotal.onchange = updateBillTotal;
-        
-        console.log(21, "current sign-in user is: ", userFullName);
-
+    
         function equalSplit() {
             currentBill.users.forEach(function(billSplitter) {
                 billSplitter.splitAmount = currentBill.totalAmount / currentBill.users.length;
@@ -150,9 +138,9 @@ function login(user) {
             var billSplitterIndex = 0;
             
             $('.js-currentBillFriendList').append(
-                '<div><span><input class="billSplitterId-index-' + billSplitterIndex + '" type="string" value="' + 
+                '<div><span><input class="billSplitterId-index-0" type="string" value="' + 
                 currentBill.users[0].userId + 
-                '"></span><span>  $<input type="number" class="billSplitAmount-index-'+ billSplitterIndex + '" placeholder="10.00"></span></div>'
+                '"></span><span>  $<input type="number" class="billSplitAmount-index-0" placeholder="10.00"></span></div>'
             );
             
             $('main').append(
@@ -172,11 +160,12 @@ function login(user) {
             });
             */
 
+            var billSplitterIndex = 1;
+
             $('.js-addaSplitter').click(function(event) {
-                billSplitterIndex ++;
                 $('.js-currentBillFriendList').append(
-                    '<div><input class="billSplitterId-index-' + billSplitterIndex + '" type="text" placeholder="Jack Doe">  $' +
-                    '<input class="billSplitAmount-index-' + billSplitterIndex + '" type="number" placeholder="12.00"></div>'
+                    '<div><span><input class="billSplitterId-index-' + billSplitterIndex + '" type="text" placeholder="Jack Doe"></span>' +
+                    '<span> $<input class="billSplitAmount-index-' + billSplitterIndex + '" type="number" placeholder="12.00"></span></div>'
                 );
                 currentBill.users.push({userId: "", fullName: "", splitAmount: 0});
                 billSplitterIndex ++;
@@ -191,15 +180,17 @@ function login(user) {
 
         $('.js-sumbitNewBill').click(function(event) {
                 console.log(98, currentBill.users.length);
-                var ii = $('.billSplitterIndex-1').val();
-                console.log(99, ii);
+                currentBill.description = $('.js-billDescription').val();
+                currentBill.totalAmount = $('.js-billTotalAmount').val();
+                //get bill split info
                 var index = 0;
-                currentBill.users.forEach(function(user) {
+                currentBill.users.forEach(function(splitter) {
                     var idKey = '.billSplitterId-index-' + index;
                     var spliAmountKey = '.billSplitAmount-index-' + index;
-                    user.userId = $(idKey).val();
-                    user.splitAmount = $(spliAmountKey).val();
-                    index ++;
+                    splitter.userId = $(idKey).val();
+                    splitter.splitAmount = $(spliAmountKey).val();
+                    console.log(120, index, splitter);
+                    index = index + 1;
                 });
                 console.log(100, currentBill); 
 
