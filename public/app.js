@@ -1,37 +1,36 @@
 
-$(function() {
-        $('header').toggleClass("hidden");
-        var row = '';
-        row += '<p>Hello!</p><br>';
-        row += '<input class="username" type="text" value="username-userA"><br>';
-        row += '<input class="password" type="password" value="password-userA">';
-        row += '<button class="js-login">Login</button>';
-        row += '<p>New User?</p>';
-        row += '<button class="js-register">Register</button>';
-        $('main').html(row);
-        $('.js-login').click(function() {
-            var usernameInput = $('.username').val();
-            var passwordInput = $('.password').val();
-            console.log(5, usernameInput, passwordInput);
-            var loginURL = "http://localhost:8080/users/me";
-            $.ajax({
-                xhrFields: {
-                    withCredentials: true
-                },
-                headers: {
-                    'Authorization': 'Basic ' + btoa(usernameInput + ':' + passwordInput)
-                },
-                url: loginURL,
-                success: function(signedInUser) {
-                    login(signedInUser);
-                },
-                fail: function() {
-                    console.log('wrong password');
-                }
-            });
-        });
-});
 
+function register() {
+    $('main').html('<h3>New User Registration</h3>');
+    var registrationForm = '<input class="js-userName" type="text" placeholder="username"><br>' +
+    '<input class="js-password" type="password" placeholder="p@ssW0rd"><br>' +
+    '<input class="js-fullName" type="text" placeholder="Full Name"><br>' +
+    '<button class="js-submit">Submit</button>';
+    $('main').append(registrationForm);
+    $('.js-submit').click(function(event) {
+        var newUser = {};
+        newUser.username = $('.js-userName').val();
+        newUser.password = $('.js-password').val();
+        newUser.fullName = $('.js-fullName').val();
+        newUser.friends = [];
+        $.ajax({
+                    type: "POST",
+                    url: "http://localhost:8080/users/",
+                    data: JSON.stringify(newUser),
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function(data) {
+                        console.log(1, data);
+                        console.log(2, data.id);
+                        var signedInUser = {user: data};
+                        login(signedInUser);
+                    },
+                    error: function(e) {
+                        console.log(e);
+                    }
+                });
+    });
+}
 
 
 /*
@@ -52,53 +51,6 @@ function login(user) {
     var userId = user.user.id;
     var userFullName = user.user.fullName;
     $('header').toggleClass("hidden");
-	var MOCK_DATA = {
-            MOCK_USERS: [
-                {
-                    id: "username-userA",
-                    fullName: "John Doe",
-                    friendList: [
-                        {id: "username-userB",
-                         fullName: "Jane Doe",
-                         balance: 29.30,
-                         billHistory: [
-                            {billId: "bill-id-A",
-                            description: "Friday Dinner",
-                            date: "October 13, 2016 11:13:00",
-                            amount: 13.00
-                            },
-                            {billId: "bill-id-B",
-                            description: "water bill",
-                            date: "October 13, 2016 11:13:00",
-                            amount: 16.30
-                            }
-                         ]
-                        },
-                        {id: "username-userC",
-                         fullName: "Jack Doe",
-                         balance: -29.30,
-                         billHistory: [
-                            {billId: "bill-id-C",
-                            description: "Thursday night clubbing drink",
-                            date: "October 13, 2016 11:13:00",
-                            amount: -13.00
-                            },
-                            {billId: "bill-id-D",
-                            description: "Uber",
-                            date: "October 13, 2016 11:13:00",
-                            amount: -16.30
-                            }
-                         ]
-                        },
-                        {id: "username-userD",
-                         fullName: "Jay Doe",
-                         balance: 0,
-                         billHistory: []
-                        }
-                    ]
-                }
-            ]
-    };
 
     function addNewBill() {
         var inputBillTotal = 0;
@@ -377,13 +329,6 @@ function login(user) {
     }
 
 
-    /*
-    function getBillSplitsSummary(callbackFn) {
-        setTimeout(function(){ callbackFn(MOCK_DATA)}, 1);
-    }
-    */
-
-
     function displayBillSplitsSummary() {
         $('nav').html('<h4>Hello, ' + userFullName + '</h4>');
         $('main').html('<p>Your bill splits summary:</p>');
@@ -416,4 +361,42 @@ function login(user) {
     })
 
 }
+
+
+$(function() {
+        $('header').toggleClass("hidden");
+        var row = '';
+        row += '<p>Hello!</p><br>';
+        row += '<input class="username" type="text" value="username-userA"><br>';
+        row += '<input class="password" type="password" value="password-userA">';
+        row += '<button class="js-login">Login</button>';
+        row += '<p>New User?</p>';
+        row += '<button class="js-register">Register</button>';
+        $('main').html(row);
+        $('.js-login').click(function() {
+            var usernameInput = $('.username').val();
+            var passwordInput = $('.password').val();
+            console.log(5, usernameInput, passwordInput);
+            var loginURL = "http://localhost:8080/users/me";
+            $.ajax({
+                xhrFields: {
+                    withCredentials: true
+                },
+                headers: {
+                    'Authorization': 'Basic ' + btoa(usernameInput + ':' + passwordInput)
+                },
+                url: loginURL,
+                success: function(signedInUser) {
+                    console.log(signedInUser);
+                    login(signedInUser);
+                },
+                fail: function() {
+                    console.log('wrong password');
+                }
+            });
+        });
+        $('.js-register').click(function(event) {
+            register();
+        });
+});
 
