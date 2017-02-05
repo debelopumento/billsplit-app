@@ -234,13 +234,16 @@ function login(user) {
                 
                 console.log(30, bill);
                 $.ajax({
-                    url: "http://localhost:8080/bills/5894066a6890add29fe0e83f",
+                    url: "http://localhost:8080/bills/" + bill.id,
                     type: "PUT",
                     contentType: "application/json; charset=utf-8",
-                    data: bill,
+                    data: JSON.stringify(bill),
                     dataType: "json",
                     success: function (data) {
-                        console.log('success!');
+                        console.log(data);
+                    },
+                    error: function(e) {
+                        console.log(e);
                     }
                 });
                 
