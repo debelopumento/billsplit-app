@@ -84,7 +84,8 @@ router.post('/', (req, res) => {
         .create({
           username: username,
           password: hash,
-          fullName: fullName
+          fullName: fullName,
+          friends: req.body.friends
         })
     })
     .then(user => {
@@ -95,10 +96,7 @@ router.post('/', (req, res) => {
     });
 });
 
-// never expose all your users like below in a prod application
-// we're just doing this so we have a quick way to see
-// if we're creating users. keep in mind, you can also
-// verify this in the Mongo shell.
+
 router.get('/', (req, res) => {
   return User
     .find()

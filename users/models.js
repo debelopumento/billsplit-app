@@ -15,12 +15,14 @@ const UserSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  fullName: {type: String, default: ""},
+  fullName: String,
+  
   friends: [{
-    fullName: {type: String, required: true},
-    id: {type: String, required: true},
-    balance: {type: Number, required: true}
+    fullName: String,
+    userId: String,
+    balance: Number
   }]
+  
 });
 
 UserSchema.methods.apiRepr = function() {
@@ -28,8 +30,7 @@ UserSchema.methods.apiRepr = function() {
     id: this._id,
     username: this.username || '',
     fullName: this.fullName || '',
-    friends: this.friends,
-    balance: this.balance
+    friends: this.friends
   };
 }
 
