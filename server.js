@@ -34,7 +34,7 @@ app.get('/bills', (req, res) => {
     .then(bills => {
       res.json({
         bills: bills.map(
-          (bills) => bills.apiRepr())
+          bills => bills.apiRepr())
       });
     })
     .catch(
@@ -57,9 +57,44 @@ app.get('/bills/:id', (req, res) => {
     });
 });
 
-app.get('/bills-user/:userId', (req, res) => {
+/*
+app.get('/bills-user/:userIdInput', (req, res) => {
   Bills
-    .find({users: {$elemMatch: {userId: req.params.userId}}})
+    .find({users: {$elemMatch: {userId: req.params.userIdInput}}})
+    .exec()
+    .then(bills => {
+        res.json({
+          bills: bills.map(
+            bills => bills.apiRepr())
+        });
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({message: 'Internal server error'})
+    });
+});
+*/
+
+//seach for bills paid by user
+app.get('/bills-paidByUser/:userIdInput', (req, res) => {
+  Bills
+    .find({"paidByUser.userId": req.params.userIdInput})
+    .exec()
+    .then(bills => {
+        res.json({
+          bills: bills.map(
+            bills => bills.apiRepr())
+        });
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({message: 'Internal server error'})
+    });
+});
+
+app.get('/bills-sum/:userIdInput/:friendIdInput', (req, res) => {
+  Bills
+    .find({$and: [{users: {$elemMatch: {userId: req.params.userIdInput}}}, {"paidByUser.userId": req.params.friendIdInput}]})
     .exec()
     .then(bills => res.json(
           {bills: bills.map(bill => bill.apiRepr())
@@ -70,9 +105,11 @@ app.get('/bills-user/:userId', (req, res) => {
     });
 });
 
-app.get('/bills-user/:userId/:friendId', (req, res) => {
+
+/*
+app.get('/bills-user/:userIdInput/:friendIdInput', (req, res) => {
   Bills
-    .find({$and: [{users: {$elemMatch: {userId: req.params.userId}}}, {"paidByUser.userId": req.params.friendId}]})
+    .find({$and: [{users: {$elemMatch: {userId: req.params.userIdInput}}}, {"paidByUser.userId": req.params.friendIdInput}]})
     .exec()
     .then(bills => res.json(
           {bills: bills.map(bill => bill.apiRepr())
@@ -82,6 +119,8 @@ app.get('/bills-user/:userId/:friendId', (req, res) => {
       res.status(500).json({message: 'Internal server error'})
     });
 });
+
+*/
 
 app.post('/bills', (req, res) => {
   const requiredFields = ['totalAmount', 'users'];
@@ -127,7 +166,7 @@ app.put('/bills/:id', (req, res) => {
   }
 
   const toUpdate = {};
-  const updateableFields = ['billDate', 'description', 'totalAmount', 'users', 'paid', 'paidByUser', 'dueDay', 'paidOff', 'memo'];
+  const updateableFields = ['description', 'totalAmount', 'users', 'paid', 'paidByUser', 'paidOff'];
 
   updateableFields.forEach(field => {
     if (field in req.body) {

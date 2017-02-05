@@ -3,8 +3,8 @@ $(function() {
         $('header').toggleClass("hidden");
         var row = '';
         row += '<p>Hello!</p><br>';
-        row += '<input class="username" type="text" value="username-userA"><br>';
-        row += '<input class="password" type="password" value="password-userA">';
+        row += '<input class="username" type="text" value="username-userD"><br>';
+        row += '<input class="password" type="password" value="password-userD">';
         row += '<button class="js-login">Login</button>';
         row += '<p>New User?</p>';
         row += '<button class="js-register">Register</button>';
@@ -218,33 +218,38 @@ function login(user) {
 
     function editBill(billId) {
         function renderEditBillForm(bill) {
-            $('main').html('<form></form>');
-            $('form').append(
+            $('main').html('<div></div>');
+            $('div').append(
                 'Bill Date: <input class="billdate" type="date" value="' + bill.billDate + '"><br>' +
                 'Description: <input class="billdescription" type="text" value="' + bill.description + '"><br>' +
                 'Total Amount: <input class="billTotalAmount" type="number" value="' + bill.totalAmount + '"><br>');
             bill.users.forEach(function(user) {
-                $('form').append('<input type="text" value="' + user.fullName + '"><input type="number" value="' + user.splitAmount + '"><br>');
+                $('div').append('<input type="text" value="' + user.fullName + '"><input type="number" value="' + user.splitAmount + '"><br>');
             })
-            $('form').append('Paid by:<input type="text" value="' + bill.paidByUser.fullName + '"><br>');
-            $('form').append('Due: <input type="date" value="' + bill.dueDay + '"><br>');
-            $('form').append('Memo: <input type="text" value="' + bill.memo + '"><br>' +
-                '<button class="js-updateBillDetails">Submit</button>'
-            );
-
-            $('.js-updateBillDetails').click(function(event) {
-                console.log("haha");
+            $('div').append('Paid by:<input type="text" value="' + bill.paidByUser.fullName + '"><br>');
+            $('div').append('Due: <input type="date" value="' + bill.dueDay + '"><br>');
+            $('div').append('Memo: <input type="text" value="' + bill.memo + '"><br>');
+            $('div').append('<button class="js-submitBillUpdates">Update</button>');
+            console.log(29, bill);
+            $('.js-submitBillUpdates').click(function(event) {                
                 bill.billDate = $('.billDate').val();
                 bill.description = $('.billdescription').val();
                 bill.totalAmount = $('.billTotalAmount').val();
-                $.put({
-                    url: 'http://localhost:8080/bills/' + billId,
+                
+                console.log(30, bill);
+                $.ajax({
+                    url: "http://localhost:8080/bills/5894066a6890add29fe0e83f",
+                    type: "PUT",
+                    contentType: "application/json; charset=utf-8",
                     data: bill,
+                    dataType: "json",
                     success: function (data) {
                         console.log('success!');
                     }
                 });
-            });
+                
+
+            }); 
         }        
         $.get({
             url: 'http://localhost:8080/bills/' + billId,
@@ -305,8 +310,9 @@ function login(user) {
     }
 
     function displayBillsWfriend(friendId, friendName) {
+        console.log(1, userId, 2, friendId);
         $.get({
-            url: 'http://localhost:8080/bills-user/' + userId + '/' + friendId,
+            url: 'http://localhost:8080/bills-sum/' + userId + '/' + friendId,
             success: function(data) {
                     console.log(12, data);
                     displayTransactionHistories(data);
@@ -351,7 +357,6 @@ function login(user) {
                 $('main').append('<p>' + friendName + 'owes you: $' + balance + '</p>');
             }
             if (balance < 0) {
-                console.log('hello');
                 $('main').append('<p>You owe ' + friendName + ' $' + (-balance) + '</p>');
             }
             //$('main').append('<p>The balance is: $' + balance + '.</p>');
@@ -381,8 +386,6 @@ function login(user) {
 
 
     function displayBillSplitsSummary() {
-        console.log(14, user);
-
         $('nav').html('<h4>Hello, ' + userFullName + '</h4>');
         $('main').html('<p>Your bill splits summary:</p>');
         var friendList = user.user.friends;
@@ -403,11 +406,9 @@ function login(user) {
         $('.js-checkFriendBillLog').click(function(event) {
             var friendId = $(this).closest('div').attr('userFriendId');
             var friendName = $(this).closest('div').attr('friendName');
-            //console.log(22, friendId, ' ', friendName);
             displayBillsWfriend(friendId, friendName);
         });
     }
-    console.log(11, user);
     displayBillSplitsSummary(user);
 
     $('.js-goToMainPage').click(function(event) {

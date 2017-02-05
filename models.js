@@ -1,24 +1,23 @@
 const mongoose = require('mongoose');
 
 const billsSchema = mongoose.Schema({
-  //id: {type: String, required: true},
-  billDate: {type: Date, required: true},
+  billDate: Date,
   description: String,
   totalAmount: {type: Number, required: true},
-  users: [{id: {type: String, required: true},
+  users: [{userId: String,
            fullName: String,
-           splitAmount: {type: Number, required: true}
+           splitAmount: Number
     }],
-  postedTime: {type: Date, default: Date.now},
-  postedBy: {userId: {type: String, required: true}, 
+  postedTime: Date,
+  postedBy: {userId: String, 
       fullName: String
   },
-  paid: {type: Boolean, required: true},
-  paidByUser: {userId: {type: String, required: true}, 
+  paid: Boolean,
+  paidByUser: {userId: String, 
       fullName: String
   },
   dueDay: Date,
-  paidOff: {type: Boolean, required: true},
+  paidOff: Boolean,
   memo: String
 });
 
