@@ -50,7 +50,7 @@ app.get('/bills/:id', (req, res) => {
   Bills
     .findById(req.params.id)
     .exec()
-    .then(bill =>res.json(bill.apiRepr()))
+    .then(bill => res.json(bill.apiRepr()))
     .catch(err => {
       console.error(err);
         res.status(500).json({message: 'Internal server error'})

@@ -97,11 +97,20 @@ router.post('/', (req, res) => {
 });
 
 
-router.get('/', (req, res) => {
+router.get('/users', (req, res) => {
   return User
     .find()
     .exec()
     .then(users => res.json(users.map(user => user.apiRepr())))
+    .catch(err => console.log(err) && res.status(500).json({message: 'Internal server error'}));
+});
+
+//search for a user by username
+router.get('/username/:username', (req, res) => {
+  return User
+    .findOne({username: req.params.username})
+    .exec()
+    .then(user =>res.json(user.apiRepr()))
     .catch(err => console.log(err) && res.status(500).json({message: 'Internal server error'}));
 });
 
