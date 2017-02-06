@@ -1,5 +1,4 @@
 
-
 function register() {
     $('main').html('<h3>New User Registration</h3>');
     var registrationForm = '<input class="js-userName" type="text" placeholder="username"><br>' +
@@ -32,24 +31,10 @@ function register() {
     });
 }
 
-
-/*
-//get all the bills in database
-$(function() {
-    //var mlabUrl = "https://api.mlab.com/api/1/databases/billsdb/collections/billscollection?apiKey=VIJVGMOkT5Cc88A3_FjbAJ0jeEa1AJAo";
-    var dbUrl = "http://localhost:8080/bills";
-    $.get(dbUrl, function(data) {
-        console.log(data);
-    });
-});
-
-*/
-
-
-
 function login(user) {
     var userId = user.user.id;
     var userFullName = user.user.fullName;
+    var signedInUserFriendList = user.user.friends;
     $('header').toggleClass("hidden");
 
     function addNewBill() {
@@ -122,8 +107,6 @@ function login(user) {
                 currentBill.users.push({userId: "", fullName: "", splitAmount: 0});
                 billSplitterIndex ++;
             });
-
-
         }
 
         $('.js-equalSplit').click(function(event) {
@@ -144,6 +127,7 @@ function login(user) {
                     index = index + 1;
                 });
                 console.log(100, currentBill);
+
                 $.ajax({
                     type: "POST",
                     url: "http://localhost:8080/bills/",
@@ -152,7 +136,12 @@ function login(user) {
                     contentType: "application/json",
                     success: function(data) {
                         console.log(800, data);
-                        displayBillSplitsSummary();
+                        
+                        //Updated all users<->paidUser's balance in database
+                        updateBalances(currentBill);
+                        //
+
+                        
                     },
                     error: function(e) {
                         console.log(e);
@@ -162,55 +151,76 @@ function login(user) {
 
     }
 
-
-    function editBill(billId) {
-        function renderEditBillForm(bill) {
-            $('main').html('<div></div>');
-            $('div').append(
-                'Bill Date: <input class="billdate" type="date" value="' + bill.billDate + '"><br>' +
-                'Description: <input class="billdescription" type="text" value="' + bill.description + '"><br>' +
-                'Total Amount: <input class="billTotalAmount" type="number" value="' + bill.totalAmount + '"><br>');
-            bill.users.forEach(function(user) {
-                $('div').append('<input type="text" value="' + user.fullName + '"><input type="number" value="' + user.splitAmount + '"><br>');
-            })
-            $('div').append('Paid by:<input type="text" value="' + bill.paidByUser.fullName + '"><br>');
-            $('div').append('Due: <input type="date" value="' + bill.dueDay + '"><br>');
-            $('div').append('Memo: <input type="text" value="' + bill.memo + '"><br>');
-            $('div').append('<button class="js-submitBillUpdates">Update</button>');
-            console.log(29, bill);
-            $('.js-submitBillUpdates').click(function(event) {                
-                bill.billDate = $('.billDate').val();
-                bill.description = $('.billdescription').val();
-                bill.totalAmount = $('.billTotalAmount').val();
-                
-                console.log(30, bill);
-                $.ajax({
-                    url: "http://localhost:8080/bills/" + bill.id,
-                    type: "PUT",
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify(bill),
-                    dataType: "json",
-                    success: function (data) {
-                        console.log(data);
+    function updateBalances(localBill) {
+        localBill.users.forEach(function(localUser) {
+            if(localUser.userId != localBill.paidByUser.userId) {
+                $.get({
+                    url: 'http://localhost:8080/bills-sum-2users/' + localUser.userId + '/' + localBill.paidByUser.userId,
+                    success: function(data) {
+                            console.log(12, data);
                     },
-                    error: function(e) {
-                        console.log(e);
-                    }
+                        fail: function() {
+                            console.log('wrong password');
+                        }
                 });
-                
+            }
+            displayBillSplitsSummary();
+        });
+    }
 
-            }); 
-        }        
-        $.get({
-            url: 'http://localhost:8080/bills/' + billId,
-            success: function(data) {
-                    renderEditBillForm(data);
-            },
-                fail: function() {
-                    console.log('failed');
-                }
+    function editBill(bill) {
+        var addablePeople = [];
+        signedInUserFriendList.forEach(function(friend) {
+            addablePeople.push(friend.fullName);
         });
 
+        $('main').html('<div></div>');        
+        $('div').append(
+            'Bill Date: <input class="billdate" type="date" value="' + bill.billDate + '"><br>' +
+            'Description: <input class="billdescription" type="text" value="' + bill.description + '"><br>' +
+            'Total Amount: <input class="billTotalAmount" type="number" value="' + bill.totalAmount + '"><br>');
+        
+
+        bill.users.forEach(function(billSplitter) {
+            $('div').append('<input class="autocompleteName" type="text" value="' + billSplitter.fullName + '"><input type="number" value="' + billSplitter.splitAmount + '"><br>');
+              
+        })        
+
+        $('div').append('Paid by:<input class="autocompleteName" type="text" value="' + bill.paidByUser.fullName + '"><br>');
+        $('div').append('Due: <input type="date" value="' + bill.dueDay + '"><br>');
+        $('div').append('Memo: <input type="text" value="' + bill.memo + '"><br>');
+        $('div').append('<button class="js-submitBillUpdates">Update</button>');
+
+        console.log(29, bill);
+
+        console.log(71, addablePeople);
+
+        $( ".autocompleteName" ).autocomplete({
+          source: addablePeople
+        });
+
+
+        $('.js-submitBillUpdates').click(function(event) {                
+            bill.billDate = $('.billDate').val();
+            bill.description = $('.billdescription').val();
+            bill.totalAmount = $('.billTotalAmount').val();
+
+            console.log(30, bill);
+            $.ajax({
+                url: "http://localhost:8080/bills/" + bill.id,
+                type: "PUT",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(bill),
+                dataType: "json",
+                success: function (data) {
+                    console.log(78, data);
+                    updateBalances(bill);
+                },
+                error: function(e) {
+                    console.log(e);
+                }
+            });
+        }); 
         
     }
 
@@ -241,7 +251,7 @@ function login(user) {
             $('main').append('<p>Memo: ' + bill.memo + '</p>' +
                 '<button class="js-editBill">Edit this bill</button>');
             $('.js-editBill').click(function(event) {
-                editBill(billId);
+                editBill(bill);
             });
         }
         $.get({
@@ -260,17 +270,17 @@ function login(user) {
     function displayBillsWfriend(friendId, friendName) {
         console.log(1, userId, 2, friendId);
         $.get({
-            url: 'http://localhost:8080/bills-sum/' + userId + '/' + friendId,
+            url: 'http://localhost:8080/bills-sum-2users/' + userId + '/' + friendId,
             success: function(data) {
                     console.log(12, data);
-                    displayTransactionHistories(data);
+                    displayTransactionHistories(data, friendId);
             },
                 fail: function() {
                     console.log('wrong password');
                 }
         });
 
-        function displayTransactionHistories(data) {
+        function displayTransactionHistories(data, friendId) {
             $('main').html('<p>Your transactions with ' + friendName + ':</p>');
             console.log(150, data);
             var balance = 0;
@@ -298,18 +308,18 @@ function login(user) {
                 }
             });
             console.log(232, balance);
+
             if (balance === 0) {
                 $('main').append('<p>You two are even.</p>');
             }
             if (balance > 0) {
-                $('main').append('<p>' + friendName + 'owes you: $' + balance + '</p>');
+                $('main').append('<p>' + friendName + ' owes you: $' + balance + '</p>');
             }
             if (balance < 0) {
                 $('main').append('<p>You owe ' + friendName + ' $' + (-balance) + '</p>');
             }
             //$('main').append('<p>The balance is: $' + balance + '.</p>');
             $('.js-checkBillDetails').click(function(event) {
-                
                 var cuurentBillId = $(this).closest('div').attr('billId');
                 getAndDisplayBillDetails(cuurentBillId);
             });
@@ -384,9 +394,7 @@ function login(user) {
     function displayBillSplitsSummary() {
         $('nav').html('<h4>Hello, ' + userFullName + '</h4>');
         $('main').html('<p>Your bill splits summary:</p>');
-        var friendList = user.user.friends;
-        console.log(12, friendList);
-        friendList.forEach(function(friend) {
+        signedInUserFriendList.forEach(function(friend) {
             console.log("friend: ", friend);
             $('main').append('<div userFriendId="' + friend.userId + '" friendName="' + friend.fullName + '">' + friend.fullName + ':  $' + friend.balance + '   <button class="js-checkFriendBillLog">See Log</button></div>');
         });
@@ -408,7 +416,6 @@ function login(user) {
         });
     }
     displayBillSplitsSummary(user);
-
     $('.js-goToMainPage').click(function(event) {
         displayBillSplitsSummary();    
     })
@@ -420,8 +427,8 @@ $(function() {
         $('header').toggleClass("hidden");
         var row = '';
         row += '<p>Hello!</p><br>';
-        row += '<input class="username" type="text" value="username-userB"><br>';
-        row += '<input class="password" type="password" value="password-userB">';
+        row += '<input class="username" type="text" value="username-userA"><br>';
+        row += '<input class="password" type="password" value="password-userA">';
         row += '<button class="js-login">Login</button>';
         row += '<p>New User?</p>';
         row += '<button class="js-register">Register</button>';
@@ -451,5 +458,11 @@ $(function() {
         $('.js-register').click(function(event) {
             register();
         });
+
+
+
+
+
+
 });
 
