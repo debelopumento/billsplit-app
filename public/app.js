@@ -173,6 +173,7 @@ function login(user) {
         signedInUserFriendList.forEach(function(friend) {
             addablePeople.push(friend.fullName);
         });
+        addablePeople.push(userFullName);
 
         $('main').html('<div></div>');        
         $('div').append(
@@ -180,10 +181,8 @@ function login(user) {
             'Description: <input class="billdescription" type="text" value="' + bill.description + '"><br>' +
             'Total Amount: <input class="billTotalAmount" type="number" value="' + bill.totalAmount + '"><br>');
         
-
         bill.users.forEach(function(billSplitter) {
             $('div').append('<input class="autocompleteName" type="text" value="' + billSplitter.fullName + '"><input type="number" value="' + billSplitter.splitAmount + '"><br>');
-              
         })        
 
         $('div').append('Paid by:<input class="autocompleteName" type="text" value="' + bill.paidByUser.fullName + '"><br>');
@@ -192,13 +191,10 @@ function login(user) {
         $('div').append('<button class="js-submitBillUpdates">Update</button>');
 
         console.log(29, bill);
-
         console.log(71, addablePeople);
-
         $( ".autocompleteName" ).autocomplete({
           source: addablePeople
         });
-
 
         $('.js-submitBillUpdates').click(function(event) {                
             bill.billDate = $('.billDate').val();
