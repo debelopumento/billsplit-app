@@ -175,20 +175,24 @@ function login(user) {
         });
         addablePeople.push(userFullName);
 
-        $('main').html('<div></div>');        
-        $('div').append(
+        $('main').html('<div class="js-editBillForm"></div>');        
+        $('.js-editBillForm').append(
             'Bill Date: <input class="billdate" type="date" value="' + bill.billDate + '"><br>' +
             'Description: <input class="billdescription" type="text" value="' + bill.description + '"><br>' +
-            'Total Amount: <input class="billTotalAmount" type="number" value="' + bill.totalAmount + '"><br>');
+            'Total Amount: <input class="billTotalAmount" type="number" value="' + bill.totalAmount + '"><br>' +
+            '<button>Equal Split</button><br>');
         
+        var billSplitterCount = bill.users.length;
+        var billSplitIndex = 0;
         bill.users.forEach(function(billSplitter) {
-            $('div').append('<input class="autocompleteName" type="text" value="' + billSplitter.fullName + '"><input type="number" value="' + billSplitter.splitAmount + '"><br>');
+            $('.js-editBillForm').append('<div><input id="splitter-index-' + billSplitIndex + '" class="autocompleteName" type="text" value="' + billSplitter.fullName + '"><input id="splitAmount-index-' + billSplitIndex +'" type="number" value="' + billSplitter.splitAmount + '"></div>');
+            billSplitIndex++;
         })        
 
-        $('div').append('Paid by:<input class="autocompleteName" type="text" value="' + bill.paidByUser.fullName + '"><br>');
-        $('div').append('Due: <input type="date" value="' + bill.dueDay + '"><br>');
-        $('div').append('Memo: <input type="text" value="' + bill.memo + '"><br>');
-        $('div').append('<button class="js-submitBillUpdates">Update</button>');
+        $('.js-editBillForm').append('<div>Paid by:<input id="paidByUser" class="autocompleteName" type="text" value="' + bill.paidByUser.fullName + '"></div>');
+        $('.js-editBillForm').append('<div>Due: <input class="billDueDay" type="date" value="' + bill.dueDay + '"></div>');
+        $('.js-editBillForm').append('<div>Memo: <input class="billMemo" type="text" value="' + bill.memo + '"></div>');
+        $('.js-editBillForm').append('<div><button class="js-submitBillUpdates">Update</button></div>');
 
         console.log(29, bill);
         console.log(71, addablePeople);
@@ -200,8 +204,30 @@ function login(user) {
             bill.billDate = $('.billDate').val();
             bill.description = $('.billdescription').val();
             bill.totalAmount = $('.billTotalAmount').val();
+            for (localIndex = 0; localIndex <= billSplitterCount; localIndex++) {
+                var splitterId = 'splitter-index-' + localIndex;
+                bill.users[localIndex].fullName = $(splitterId).val();
+                signedInUserFriendList.forEach(function(friendSearch) {
+                    if (friendSearch.fullName === bill.users[localIndex].fullName) {
+                        bill.users[localIndex].userId = friendSearch.userId;
+                    }
+                });
+
+                var splitAmountId = 'splitAmount-index-' + localIndex;
+                bill.users[localIndex].splitAmount = $(splitAmountId).val();
+            }
+
+            bill.paidByUser.fullName = $('#paidByUser').val();
+            signedInUserFriendList.forEach(function(friendSearch) {
+                if (friendSearch.fullName === bill.paidByUser.fullName) {
+                    bill.paidByUser.userId = friendSearch.userId;
+                }
+            });
+            bill.dueDay = $('.billDueDay').val();
+            bill.memo = $('.billMemo').val();
 
             console.log(30, bill);
+            
             $.ajax({
                 url: "http://localhost:8080/bills/" + bill.id,
                 type: "PUT",
@@ -216,6 +242,7 @@ function login(user) {
                     console.log(e);
                 }
             });
+
         }); 
         
     }
