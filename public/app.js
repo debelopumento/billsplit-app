@@ -70,14 +70,14 @@ function login(user) {
                 memo: ""
             };
         $('main').html('<p>Add a new bill</p>');
-        $('main').append('<form class="js-billDetailsInput">' +
+        $('main').append('<div>' +
             //'Date <input type="date" name="billDate" value="' + currentBill.billDate + '"><br>' +
             'Description <input type="text" class="js-billDescription"><br>' +
-            'Total Amount <input type="number" class="js-billTotalAmount" min="0"><br></form>'
+            'Bill paid by: <input type="text" class="js-billPaidByUser"><br>' +
+            'Total Amount <input type="number" class="js-billTotalAmount" min="0"><br></div>'
         );
         $('main').append('<div><button class="js-equalSplit">Equal Split</button></div>' + 
-            '<div class="js-currentBillFriendList"></div>'
-        );
+            '<div class="js-currentBillFriendList"></div>');
         renderCurrentBillSplitList();
     
         function equalSplit() {
@@ -85,10 +85,7 @@ function login(user) {
                 billSplitter.splitAmount = currentBill.totalAmount / currentBill.users.length;
             });
             renderCurrentBillSplitList();
-
         }
-
-
         function renderCurrentBillSplitList() {
             var billSplitterIndex = 0;
             
@@ -136,6 +133,7 @@ function login(user) {
         $('.js-sumbitNewBill').click(function(event) {
                 currentBill.description = $('.js-billDescription').val();
                 currentBill.totalAmount = $('.js-billTotalAmount').val();
+                currentBill.paidByUser.userId = $('.js-billPaidByUser').val();
                 //get bill split info
                 var index = 0;
                 currentBill.users.forEach(function(splitter) {
@@ -154,12 +152,13 @@ function login(user) {
                     contentType: "application/json",
                     success: function(data) {
                         console.log(800, data);
+                        displayBillSplitsSummary();
                     },
                     error: function(e) {
                         console.log(e);
                     }
                 });
-        });      
+        });    
 
     }
 
@@ -245,8 +244,6 @@ function login(user) {
                 editBill(billId);
             });
         }
-
-
         $.get({
             url: 'http://localhost:8080/bills/' + billId,
             success: function(data) {
@@ -348,8 +345,8 @@ function login(user) {
                             contentType: "application/json; charset=utf-8",
                             data: JSON.stringify(currentUser),
                             dataType: "json",
-                            success: function (data) {
-                                console.log(data);
+                            success: function () {
+                                console.log("added ", addedFriend.fullName, " successfully!");
                             },
                             error: function(e) {
                                 console.log(e);
@@ -367,14 +364,14 @@ function login(user) {
                             contentType: "application/json; charset=utf-8",
                             data: JSON.stringify(addedFriend),
                             dataType: "json",
-                            success: function (data) {
-                                console.log(data);
+                            success: function () {
+                                console.log("added ", addedFriend.fullName, " successfully!");
                             },
                             error: function(e) {
                                 console.log(e);
                             }
                         });
-
+                        displayBillSplitsSummary();
                     },
                     fail: function() {
                         console.log('failed');
@@ -391,7 +388,7 @@ function login(user) {
         console.log(12, friendList);
         friendList.forEach(function(friend) {
             console.log("friend: ", friend);
-            $('main').append('<div userFriendId="' + friend._id + '" friendName="' + friend.fullName + '">' + friend.fullName + ':  $' + friend.balance + '   <button class="js-checkFriendBillLog">See Log</button></div>');
+            $('main').append('<div userFriendId="' + friend.userId + '" friendName="' + friend.fullName + '">' + friend.fullName + ':  $' + friend.balance + '   <button class="js-checkFriendBillLog">See Log</button></div>');
         });
         $('main').append('<button class="js-addNewFriend">Add a new user to your friend list</button></br>');
         $('main').append('<button class="js-addNewBill">Add a new bill</button>');
@@ -406,6 +403,7 @@ function login(user) {
         $('.js-checkFriendBillLog').click(function(event) {
             var friendId = $(this).closest('div').attr('userFriendId');
             var friendName = $(this).closest('div').attr('friendName');
+            console.log(34, user.user.id);
             displayBillsWfriend(friendId, friendName);
         });
     }
@@ -422,8 +420,8 @@ $(function() {
         $('header').toggleClass("hidden");
         var row = '';
         row += '<p>Hello!</p><br>';
-        row += '<input class="username" type="text" value="username-userN"><br>';
-        row += '<input class="password" type="password" value="password-userN">';
+        row += '<input class="username" type="text" value="username-userB"><br>';
+        row += '<input class="password" type="password" value="password-userB">';
         row += '<button class="js-login">Login</button>';
         row += '<p>New User?</p>';
         row += '<button class="js-register">Register</button>';

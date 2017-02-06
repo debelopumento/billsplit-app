@@ -57,24 +57,6 @@ app.get('/bills/:id', (req, res) => {
     });
 });
 
-/*
-app.get('/bills-user/:userIdInput', (req, res) => {
-  Bills
-    .find({users: {$elemMatch: {userId: req.params.userIdInput}}})
-    .exec()
-    .then(bills => {
-        res.json({
-          bills: bills.map(
-            bills => bills.apiRepr())
-        });
-    })
-    .catch(err => {
-      console.error(err);
-      res.status(500).json({message: 'Internal server error'})
-    });
-});
-*/
-
 //seach for bills paid by user
 app.get('/bills-paidByUser/:userIdInput', (req, res) => {
   Bills
@@ -92,9 +74,11 @@ app.get('/bills-paidByUser/:userIdInput', (req, res) => {
     });
 });
 
-app.get('/bills-sum/:userIdInput/:friendIdInput', (req, res) => {
+//get bills include user
+app.get('/bills-sum/:userIdInput', (req, res) => {
   Bills
-    .find({$and: [{users: {$elemMatch: {userId: req.params.userIdInput}}}, {"paidByUser.userId": req.params.friendIdInput}]})
+    //.find({$in: [{$and: [{users: {$elemMatch: {userId: req.params.friendIdInput}}}, {"paidByUser.userId": req.params.userIdInput}]}, {}]})
+    .find({users: {$elemMatch: {userId: req.params.userIdInput}}})
     .exec()
     .then(bills => res.json(
           {bills: bills.map(bill => bill.apiRepr())
@@ -105,11 +89,10 @@ app.get('/bills-sum/:userIdInput/:friendIdInput', (req, res) => {
     });
 });
 
-
-/*
-app.get('/bills-user/:userIdInput/:friendIdInput', (req, res) => {
+app.get('/bills-sum-2users/:userIdInput/:friendIdInput', (req, res) => {
   Bills
-    .find({$and: [{users: {$elemMatch: {userId: req.params.userIdInput}}}, {"paidByUser.userId": req.params.friendIdInput}]})
+    
+    .find({$or: [{$and: [{users: {$elemMatch: {userId: req.params.friendIdInput}}}, {"paidByUser.userId": req.params.userIdInput}]}, {$and: [{users: {$elemMatch: {userId: req.params.userIdInput}}}, {"paidByUser.userId": req.params.friendIdInput}]}]})
     .exec()
     .then(bills => res.json(
           {bills: bills.map(bill => bill.apiRepr())
@@ -120,7 +103,6 @@ app.get('/bills-user/:userIdInput/:friendIdInput', (req, res) => {
     });
 });
 
-*/
 
 app.post('/bills', (req, res) => {
   const requiredFields = ['totalAmount', 'users'];
