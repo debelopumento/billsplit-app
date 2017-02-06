@@ -1,3 +1,7 @@
+
+
+
+
 const {BasicStrategy} = require('passport-http');
 const express = require('express');
 const jsonParser = require('body-parser').json();
@@ -97,7 +101,7 @@ router.post('/', (req, res) => {
 });
 
 
-router.get('/users', (req, res) => {
+router.get('/', (req, res) => {
   return User
     .find()
     .exec()
@@ -112,6 +116,15 @@ router.get('/username/:username', (req, res) => {
     .exec()
     .then(user =>res.json(user.apiRepr()))
     .catch(err => console.log(err) && res.status(500).json({message: 'Internal server error'}));
+});
+
+//update user info
+router.put('/userUpdate/:id', (req, res) => {
+  User
+    .findByIdAndUpdate(req.params.id, {$set: req.body})
+    .exec()
+    .then(user => res.status(204).end())
+    .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
 
 

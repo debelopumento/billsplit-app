@@ -322,10 +322,65 @@ function login(user) {
 
     function addNewFriend() {
         $('main').html('<p>Add this user:</p>');
-        $('main').append('<form>Username:<br>' +
-            '<input type="text" name="username"><br>' +
-            '<button>Submit</button>'
+        $('main').append('<p>Username:</p>' +
+            '<input class="js-searchUsername" type="text" value="username-userO"><br>' +
+            '<button class="js-submit">Add</button>'
         );
+        $('.js-submit').click(function(event) {
+            var searchUsername = $('.js-searchUsername').val();
+            var url_username = 'http://localhost:8080/users/username/' + searchUsername;
+            
+            $.get({
+                url: url_username,
+                success: function(addedFriend) {
+                        console.log(80, addedFriend);
+                        //update user's friend list
+                        currentUser = user.user;
+                        currentUser.friends.push({
+                            userId: addedFriend.id,
+                            fullName: addedFriend.fullName,
+                            balance: 0
+                        });
+                        console.log(70, currentUser);
+                        $.ajax({
+                            url: "http://localhost:8080/users/userUpdate/" + currentUser.id,
+                            type: "PUT",
+                            contentType: "application/json; charset=utf-8",
+                            data: JSON.stringify(currentUser),
+                            dataType: "json",
+                            success: function (data) {
+                                console.log(data);
+                            },
+                            error: function(e) {
+                                console.log(e);
+                            }
+                        });
+                        //add user to friend's friend list.
+                        addedFriend.friends.push({
+                            userId: currentUser.id,
+                            fullName: userFullName,
+                            balance: 0
+                        });
+                        $.ajax({
+                            url: "http://localhost:8080/users/userUpdate/" + addedFriend.id,
+                            type: "PUT",
+                            contentType: "application/json; charset=utf-8",
+                            data: JSON.stringify(addedFriend),
+                            dataType: "json",
+                            success: function (data) {
+                                console.log(data);
+                            },
+                            error: function(e) {
+                                console.log(e);
+                            }
+                        });
+
+                    },
+                    fail: function() {
+                        console.log('failed');
+                    }
+            });
+        });
     }
 
 
@@ -336,9 +391,9 @@ function login(user) {
         console.log(12, friendList);
         friendList.forEach(function(friend) {
             console.log("friend: ", friend);
-            $('main').append('<div userFriendId="' + friend._id + '" friendName="' + friend.fullname + '">' + friend.fullname + ':  $' + friend.balance + '   <button class="js-checkFriendBillLog">See Log</button></div>');
+            $('main').append('<div userFriendId="' + friend._id + '" friendName="' + friend.fullName + '">' + friend.fullName + ':  $' + friend.balance + '   <button class="js-checkFriendBillLog">See Log</button></div>');
         });
-        $('main').append('<button class="js-addNewFriend">Add a new user to your list</button></br>');
+        $('main').append('<button class="js-addNewFriend">Add a new user to your friend list</button></br>');
         $('main').append('<button class="js-addNewBill">Add a new bill</button>');
         $('.js-addNewFriend').click(function(event) {
             addNewFriend();
@@ -367,8 +422,8 @@ $(function() {
         $('header').toggleClass("hidden");
         var row = '';
         row += '<p>Hello!</p><br>';
-        row += '<input class="username" type="text" value="username-userA"><br>';
-        row += '<input class="password" type="password" value="password-userA">';
+        row += '<input class="username" type="text" value="username-userN"><br>';
+        row += '<input class="password" type="password" value="password-userN">';
         row += '<button class="js-login">Login</button>';
         row += '<p>New User?</p>';
         row += '<button class="js-register">Register</button>';
