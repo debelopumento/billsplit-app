@@ -267,6 +267,7 @@ function login(signedInUser) {
                     type: 'DELETE',
                     success: function() {
                         console.log('successfully deleted bill!');
+                        displayBillSplitsSummary();
                     },
                     error: function(e) {
                         console.log(e);
@@ -444,8 +445,8 @@ $(function() {
         $('header').toggleClass("hidden");
         var row = '';
         row += '<p>Hello!</p><br>';
-        row += '<input class="username" type="text" value="username-userC"><br>';
-        row += '<input class="password" type="password" value="password-userC">';
+        row += '<input class="username" type="text" value="username-userD"><br>';
+        row += '<input class="password" type="password" value="password-userD">';
         row += '<button class="js-login">Login</button>';
         row += '<p>New User?</p>';
         row += '<button class="js-register">Register</button>';
