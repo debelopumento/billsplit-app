@@ -38,137 +38,68 @@ function login(user) {
     $('header').toggleClass("hidden");
 
     function addNewBill() {
-        var inputBillTotal = 0;
-        var currentBill = {
-                totalAmount: inputBillTotal,
+        var newBill = {
+                totalAmount: 0,
                 billDate: Date(),
                 description: '',
                 users: [
                     {userId: userId,
                      fullName: userFullName,
                      splitAmount: 0
+                    },
+                    {userId: '',
+                     fullName: '',
+                     splitAmount: 0
                     }
                 ],
                 postedTime: Date(),
-                paidByUser: {userId: "", fullName: ""},
+                paidByUser: {userId: userId, fullName: userFullName},
                 padiOff: false,
                 memo: ""
-            };
-        $('main').html('<p>Add a new bill</p>');
-        $('main').append('<div>' +
-            //'Date <input type="date" name="billDate" value="' + currentBill.billDate + '"><br>' +
-            'Description <input type="text" class="js-billDescription"><br>' +
-            'Bill paid by: <input type="text" class="js-billPaidByUser"><br>' +
-            'Total Amount <input type="number" class="js-billTotalAmount" min="0"><br></div>'
-        );
-        $('main').append('<div><button class="js-equalSplit">Equal Split</button></div>' + 
-            '<div class="js-currentBillFriendList"></div>');
-        renderCurrentBillSplitList();
-    
-        function equalSplit() {
-            currentBill.users.forEach(function(billSplitter) {
-                billSplitter.splitAmount = currentBill.totalAmount / currentBill.users.length;
+        };
+        var isNewBill = true;
+        editBill(newBill, isNewBill);
+    }
+
+
+
+    function editBill(localBill, isNewBill) {
+        var oldBill = localBill;
+        function renderBillSplitterList() {
+            var billSplitterListHtml = '';
+            $('.js-billSplitterList').html('');
+            var billSplitterCount = localBill.users.length;
+            var billSplitIndex = 0;
+            localBill.users.forEach(function(billSplitter) {
+                billSplitterListHtml += '<div splitIndex="' + billSplitIndex + '"><input id="splitter-index-' + billSplitIndex + '" class="autocompleteName" type="text" value="' + billSplitter.fullName + '"><input id="splitAmount-index-' + billSplitIndex +'" type="number" value="' + billSplitter.splitAmount + '"><button class="js-removeBillSplitter">Remove</button></div>';
+                billSplitIndex++;
             });
-            renderCurrentBillSplitList();
-        }
-        function renderCurrentBillSplitList() {
-            var billSplitterIndex = 0;
-            
-            $('.js-currentBillFriendList').append(
-                '<div><span><input class="billSplitterId-index-0" type="string" value="' + 
-                currentBill.users[0].userId + 
-                '"></span><span>  $<input type="number" class="billSplitAmount-index-0" placeholder="10.00"></span></div>'
-            );
-            
-            $('main').append(
-                
-                '<button class="js-addaSplitter">Add a friend to this bill</button><br>'
-            );
-
-
-            $('main').append('<button class="js-sumbitNewBill">Submit</button>');
-
-            /*
-            $('.js-updateCurrentSplit').click(function(event) {
-                var updatedSplitAmount = $('.js-billSplitterSplitAmount').val();
-                var updatedPersonUsername = $(this).closest('div').attr("id");
-                console.log(25, updatedSplitAmount, updatedPersonUsername);
-                updateCurrentBill(updatedSplitAmount, updatedPersonUsername);
+            $('.js-billSplitterList').append(billSplitterListHtml);
+            $('.autocompleteName').autocomplete({
+              source: addablePeople
             });
-            */
-
-            var billSplitterIndex = 1;
-
-            $('.js-addaSplitter').click(function(event) {
-                $('.js-currentBillFriendList').append(
-                    '<div><span><input class="billSplitterId-index-' + billSplitterIndex + '" type="text" placeholder="Jack Doe"></span>' +
-                    '<span> $<input class="billSplitAmount-index-' + billSplitterIndex + '" type="number" placeholder="12.00"></span></div>'
-                );
-                currentBill.users.push({userId: "", fullName: "", splitAmount: 0});
-                billSplitterIndex ++;
+            $('.js-removeBillSplitter').click(function(event) {
+                var splitIndex = $(this).closest('div').attr('splitIndex');
+                localBill.users.splice(splitIndex, 1);
+                renderBillSplitterList();
             });
         }
 
-        $('.js-equalSplit').click(function(event) {
-            equalSplit();
-        });  
-
-        $('.js-sumbitNewBill').click(function(event) {
-                currentBill.description = $('.js-billDescription').val();
-                currentBill.totalAmount = $('.js-billTotalAmount').val();
-                currentBill.paidByUser.userId = $('.js-billPaidByUser').val();
-                //get bill split info
-                var index = 0;
-                currentBill.users.forEach(function(splitter) {
-                    var idKey = '.billSplitterId-index-' + index;
-                    var spliAmountKey = '.billSplitAmount-index-' + index;
-                    splitter.userId = $(idKey).val();
-                    splitter.splitAmount = $(spliAmountKey).val();
-                    index = index + 1;
-                });
-                console.log(100, currentBill);
-
-                $.ajax({
-                    type: "POST",
-                    url: "http://localhost:8080/bills/",
-                    data: JSON.stringify(currentBill),
-                    dataType: "json",
-                    contentType: "application/json",
-                    success: function(data) {
-                        console.log(800, data);
-                        
-                        //Updated all users<->paidUser's balance in database
-                        updateBalances(currentBill);
-                        //
-
-                        
-                    },
-                    error: function(e) {
-                        console.log(e);
+        function updateUserList() {
+            var billSplitterCount = localBill.users.length;
+            for (localIndex = 0; localIndex < billSplitterCount; localIndex++) {
+                var splitterId = '#splitter-index-' + localIndex;
+                localBill.users[localIndex].fullName = $(splitterId).val();
+                signedInUserFriendList.forEach(function(friendSearch) {
+                    if (friendSearch.fullName === localBill.users[localIndex].fullName) {
+                        localBill.users[localIndex].userId = friendSearch.userId;
                     }
                 });
-        });    
-
-    }
-
-    function updateBalances(localBill) {
-        localBill.users.forEach(function(localUser) {
-            if(localUser.userId != localBill.paidByUser.userId) {
-                $.get({
-                    url: 'http://localhost:8080/bills-sum-2users/' + localUser.userId + '/' + localBill.paidByUser.userId,
-                    success: function(data) {
-                            console.log(12, data);
-                    },
-                        fail: function() {
-                            console.log('wrong password');
-                        }
-                });
+                var splitAmountId = '#splitAmount-index-' + localIndex;
+                localBill.users[localIndex].splitAmount = $(splitAmountId).val();
             }
-            displayBillSplitsSummary();
-        });
-    }
+        }
 
-    function editBill(bill) {
         var addablePeople = [];
         signedInUserFriendList.forEach(function(friend) {
             addablePeople.push(friend.fullName);
@@ -177,80 +108,130 @@ function login(user) {
 
         $('main').html('<div class="js-editBillForm"></div>');        
         $('.js-editBillForm').append(
-            'Bill Date: <input class="billdate" type="date" value="' + bill.billDate + '"><br>' +
-            'Description: <input class="billdescription" type="text" value="' + bill.description + '"><br>' +
-            'Total Amount: <input class="billTotalAmount" type="number" value="' + bill.totalAmount + '"><br>' +
-            '<button>Equal Split</button><br>');
-        
-        var billSplitterCount = bill.users.length;
-        var billSplitIndex = 0;
-        bill.users.forEach(function(billSplitter) {
-            $('.js-editBillForm').append('<div><input id="splitter-index-' + billSplitIndex + '" class="autocompleteName" type="text" value="' + billSplitter.fullName + '"><input id="splitAmount-index-' + billSplitIndex +'" type="number" value="' + billSplitter.splitAmount + '"></div>');
-            billSplitIndex++;
-        })        
+            '<div>Bill Date: <input class="billdate" type="date" value="' + formatDate(localBill.billDate) + '"></div>' +
+            '<div>Description: <input class="billdescription" type="text" value="' + localBill.description + '"></div>' +
+            '<div>Total Amount: <input class="billTotalAmount" type="number" value="' + localBill.totalAmount + '"></div>' +
+            '<div><button class="js-equalSplit">Equal Split</button></div>' +
+            '<div class="js-billSplitterList"></div>');
 
-        $('.js-editBillForm').append('<div>Paid by:<input id="paidByUser" class="autocompleteName" type="text" value="' + bill.paidByUser.fullName + '"></div>');
-        $('.js-editBillForm').append('<div>Due: <input class="billDueDay" type="date" value="' + bill.dueDay + '"></div>');
-        $('.js-editBillForm').append('<div>Memo: <input class="billMemo" type="text" value="' + bill.memo + '"></div>');
-        $('.js-editBillForm').append('<div><button class="js-submitBillUpdates">Update</button></div>');
+        renderBillSplitterList();
 
-        console.log(29, bill);
-        console.log(71, addablePeople);
-        $( ".autocompleteName" ).autocomplete({
-          source: addablePeople
+        $('.js-editBillForm').append(
+            '<div><button class="js-addaSplitter">Add a friend to this bill</button></div>'
+        );
+        $('.js-editBillForm').append('<div>Paid by:<input id="paidByUser" class="autocompleteName" type="text" value="' + localBill.paidByUser.fullName + '"></div>');
+        $('.js-editBillForm').append('<div>Due: <input class="billDueDay" type="date" value="' + formatDate(localBill.dueDay) + '"></div>');
+        $('.js-editBillForm').append('<div>Memo: <input class="billMemo" type="text" value="' + localBill.memo + '"></div>');
+        $('.js-editBillForm').append('<div><button class="js-submitBillUpdates">Submit</button></div>');
+
+        $('.js-addaSplitter').click(function(event) {
+            updateUserList();
+            var newUser = {
+                userId: '',
+                fullName: '',
+                splitAmount: ''
+            }
+            console.log(20, newUser);
+            localBill.users.push(newUser);
+            
+            renderBillSplitterList();
         });
 
-        $('.js-submitBillUpdates').click(function(event) {                
-            bill.billDate = $('.billDate').val();
-            bill.description = $('.billdescription').val();
-            bill.totalAmount = $('.billTotalAmount').val();
-            for (localIndex = 0; localIndex <= billSplitterCount; localIndex++) {
-                var splitterId = 'splitter-index-' + localIndex;
-                bill.users[localIndex].fullName = $(splitterId).val();
-                signedInUserFriendList.forEach(function(friendSearch) {
-                    if (friendSearch.fullName === bill.users[localIndex].fullName) {
-                        bill.users[localIndex].userId = friendSearch.userId;
+        $('.js-equalSplit').click(function(event) {
+            updateUserList();
+            var billSplitterCount = localBill.users.length;
+            localBill.totalAmount = $('.billTotalAmount').val();
+            var equalSplitAmount = localBill.totalAmount / billSplitterCount;
+            localBill.users.forEach(function(splitter) {
+                splitter.splitAmount = equalSplitAmount;
+            });
+            renderBillSplitterList();
+
+        });
+        
+
+        $('.js-submitBillUpdates').click(function(event) {
+            var billSplitterCount = localBill.users.length;
+            localBill.billDate = $('.billDate').val();
+            localBill.description = $('.billdescription').val();
+            localBill.totalAmount = $('.billTotalAmount').val();
+            
+            updateUserList();
+
+            localBill.paidByUser.fullName = $('#paidByUser').val();
+            signedInUserFriendList.push({
+                fullName: userFullName,
+                userId: userId
+            });
+            signedInUserFriendList.forEach(function(friendSearch) {
+                if (friendSearch.fullName === localBill.paidByUser.fullName) {
+                    localBill.paidByUser.userId = friendSearch.userId;
+                }
+            });
+
+            localBill.dueDay = $('.billDueDay').val();
+            localBill.memo = $('.billMemo').val();
+            
+            console.log(14, localBill);
+
+            //if it's a new bill, POST, if it's an existing bill, PUT
+            if (isNewBill === false) {
+                $.ajax({
+                    url: window.location.href + 'bills/' + localBill.id,
+                    type: "PUT",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(localBill),
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(8, "bill is successfully sent to db");
+                        //updateBalances(localBill, isNewBill, oldBill);
+                        displayBillSplitsSummary();
+                    },
+                    error: function(e) {
+                        console.log(e);
                     }
                 });
-
-                var splitAmountId = 'splitAmount-index-' + localIndex;
-                bill.users[localIndex].splitAmount = $(splitAmountId).val();
             }
-
-            bill.paidByUser.fullName = $('#paidByUser').val();
-            signedInUserFriendList.forEach(function(friendSearch) {
-                if (friendSearch.fullName === bill.paidByUser.fullName) {
-                    bill.paidByUser.userId = friendSearch.userId;
-                }
-            });
-            bill.dueDay = $('.billDueDay').val();
-            bill.memo = $('.billMemo').val();
-
-            console.log(30, bill);
-            
-            $.ajax({
-                url: "http://localhost:8080/bills/" + bill.id,
-                type: "PUT",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(bill),
-                dataType: "json",
-                success: function (data) {
-                    console.log(78, data);
-                    updateBalances(bill);
-                },
-                error: function(e) {
-                    console.log(e);
-                }
-            });
-
-        }); 
-        
+            if (isNewBill === true) {
+                $.ajax({
+                    url: "http://localhost:8080/bills/",
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(localBill),
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(8, "bill is successfully sent to db");
+                        //updateBalances(localBill, isNewBill, oldBill);
+                        displayBillSplitsSummary();
+                    },
+                    error: function(e) {
+                        console.log(e);
+                    }
+                });
+            }
+        });
     }
+
+    function formatDate(unformattedDate) {
+                var date = new Date(unformattedDate);
+                var formattedMonth = date.getMonth() + 1;
+                if (formattedMonth < 10) {
+                    formattedMonth = '0' + formattedMonth.toString();
+                }
+                    else {formattedMonth = formattedMonth.toString();}
+                var formattedDay = date.getDate() + 1;
+                if (formattedDay < 10) {
+                    formattedDay = '0' + formattedDay.toString();
+                }
+                    else {formattedDay = formattedDay.toString();}
+                var formattedDate = date.getFullYear().toString() + '-' + formattedMonth + '-' + formattedDay;
+                return formattedDate;
+            }
 
     function getAndDisplayBillDetails(billId) {
         function displayBill(bill) {
             $('main').html('<p>Bill Details:</p>');
-            $('main').append('<p>Date: ' + bill.billDate + '</p>' +
+            $('main').append('<p>Date: ' + formatDate(bill.billDate) + '</p>' +
             '<p>Description: ' + bill.description + '</p>' +
             '<p>Total Amount: ' + bill.totalAmount + '</p>') +
             '<p>Bill splits: </p>';
@@ -270,17 +251,17 @@ function login(user) {
                     $('main').append('<p>' + bill.paidByUser.fullName + ' paid for this bill.</p>');
                 }
 
-            $('main').append('<p>Due on: ' + bill.dueDay + '</p>');
+            $('main').append('<p>Due on: ' + formatDate(bill.dueDay) + '</p>');
             $('main').append('<p>Memo: ' + bill.memo + '</p>' +
                 '<button class="js-editBill">Edit this bill</button>');
             $('.js-editBill').click(function(event) {
-                editBill(bill);
+                var isNewBill = false;
+                editBill(bill, isNewBill);
             });
         }
         $.get({
             url: 'http://localhost:8080/bills/' + billId,
             success: function(data) {
-                    console.log(123, data);
                     displayBill(data);
             },
                 fail: function() {
@@ -291,11 +272,9 @@ function login(user) {
     }
 
     function displayBillsWfriend(friendId, friendName) {
-        console.log(1, userId, 2, friendId);
         $.get({
             url: 'http://localhost:8080/bills-sum-2users/' + userId + '/' + friendId,
             success: function(data) {
-                    console.log(12, data);
                     displayTransactionHistories(data, friendId);
             },
                 fail: function() {
@@ -305,33 +284,31 @@ function login(user) {
 
         function displayTransactionHistories(data, friendId) {
             $('main').html('<p>Your transactions with ' + friendName + ':</p>');
-            console.log(150, data);
             var balance = 0;
-            data.bills.forEach(function(bill) {
+            data.bills.forEach(function(localBill) {
                 //If friend paid for the bill
-                if (bill.paidByUser.userId != userId) {
-                    bill.users.forEach(function(user) {
+                if (localBill.paidByUser.userId != userId) {                    
+                    localBill.users.forEach(function(user) {
                         if (user.userId === userId) {
                             var userOwe = user.splitAmount;
-                            console.log(89, bill);
-                            $('main').append('<div billId="' + bill.id + '"><span>' + bill.billDate + '   </span><span>' + bill.description + '   </span><span>You owe: $' + userOwe + '</span><button class="js-checkBillDetails">Edit/See Details</button><br>');
+                            $('main').append('<div billId="' + localBill.id + '"><span>' + formatDate(localBill.billDate) + '   </span><span>' + localBill.description + '   </span><span>You owe: $' + userOwe + '</span><button class="js-checkBillDetails">Edit/See Details</button><br>');
                             balance = balance - userOwe;
                         }
-                });}
+                    });
+                }
 
                 //If user paid for the bill, friend owes user money
-                if (bill.paidByUser.userId === userId) {
-                    bill.users.forEach(function(user) {
+                if (localBill.paidByUser.userId === userId) {
+                    console.log(12, localBill.paidByUser);
+                    localBill.users.forEach(function(user) {
                         if (user.userId === friendId) {
                             var friendOwe = user.splitAmount;
-                            $('main').append('<div billId="' + bill.id + '"><span>' + bill.billDate + '   </span><span>' + bill.description + '   </span>' + friendName  + '<span> owes you: $' + friendOwe + '</span><button class="js-checkBillDetails">Edit/See Details</button><br>');
+                            $('main').append('<div billId="' + localBill.id + '"><span>' + formatDate(localBill.billDate) + '   </span><span>' + localBill.description + '   </span>' + friendName  + '<span> owes you: $' + friendOwe + '</span><button class="js-checkBillDetails">Edit/See Details</button><br>');
                             balance = balance + friendOwe;
                         }
                     });
                 }
             });
-            console.log(232, balance);
-
             if (balance === 0) {
                 $('main').append('<p>You two are even.</p>');
             }
@@ -418,7 +395,6 @@ function login(user) {
         $('nav').html('<h4>Hello, ' + userFullName + '</h4>');
         $('main').html('<p>Your bill splits summary:</p>');
         signedInUserFriendList.forEach(function(friend) {
-            console.log("friend: ", friend);
             $('main').append('<div userFriendId="' + friend.userId + '" friendName="' + friend.fullName + '">' + friend.fullName + ':  $' + friend.balance + '   <button class="js-checkFriendBillLog">See Log</button></div>');
         });
         $('main').append('<button class="js-addNewFriend">Add a new user to your friend list</button></br>');
@@ -427,21 +403,21 @@ function login(user) {
             addNewFriend();
         });
         $('.js-addNewBill').click(function(event) {
-            console.log(44);
             addNewBill();
         });
 
         $('.js-checkFriendBillLog').click(function(event) {
             var friendId = $(this).closest('div').attr('userFriendId');
             var friendName = $(this).closest('div').attr('friendName');
-            console.log(34, user.user.id);
             displayBillsWfriend(friendId, friendName);
         });
     }
-    displayBillSplitsSummary(user);
+
+    displayBillSplitsSummary();
+
     $('.js-goToMainPage').click(function(event) {
         displayBillSplitsSummary();    
-    })
+    });
 
 }
 
@@ -450,8 +426,8 @@ $(function() {
         $('header').toggleClass("hidden");
         var row = '';
         row += '<p>Hello!</p><br>';
-        row += '<input class="username" type="text" value="username-userA"><br>';
-        row += '<input class="password" type="password" value="password-userA">';
+        row += '<input class="username" type="text" value="username-userK"><br>';
+        row += '<input class="password" type="password" value="password-userK">';
         row += '<button class="js-login">Login</button>';
         row += '<p>New User?</p>';
         row += '<button class="js-register">Register</button>';
@@ -459,7 +435,6 @@ $(function() {
         $('.js-login').click(function() {
             var usernameInput = $('.username').val();
             var passwordInput = $('.password').val();
-            console.log(5, usernameInput, passwordInput);
             var loginURL = "http://localhost:8080/users/me";
             $.ajax({
                 xhrFields: {
@@ -470,7 +445,6 @@ $(function() {
                 },
                 url: loginURL,
                 success: function(signedInUser) {
-                    console.log(signedInUser);
                     login(signedInUser);
                 },
                 fail: function() {
@@ -481,11 +455,5 @@ $(function() {
         $('.js-register').click(function(event) {
             register();
         });
-
-
-
-
-
-
 });
 

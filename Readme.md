@@ -1,1 +1,1 @@
-Live Page:  https://debelopumento.github.io/billsplit-app/public/index.html
+Live Page:  https://bill-split-app.herokuapp.com/

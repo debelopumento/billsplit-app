@@ -109,6 +109,32 @@ router.get('/', (req, res) => {
     .catch(err => console.log(err) && res.status(500).json({message: 'Internal server error'}));
 });
 
+router.get('/userId/:id', (req, res) => {
+  return User
+    .findById(req.params.id)
+    .exec()
+    .then(user => res.json(user.apiRepr()))
+    .catch(err => {
+      console.error(err);
+        res.status(500).json({message: 'Internal server error'})
+    });
+});
+
+//get a group of users by their ids
+router.get('/getUsers/:input', (req, res) => {  
+  var usernameCollectionString = req.params.input;
+  var usernameCollectionArray = JSON.parse(usernameCollectionString);
+  return User
+    .find({_id: {$in: usernameCollectionArray}})
+    .exec()
+    .then(users => res.json(users.map(user => user.apiRepr())))
+    .catch(err => {
+        console.error(err);
+        res.status(500).json({message: 'Internal server error'})
+    });
+});
+
+
 //search for a user by username
 router.get('/username/:username', (req, res) => {
   return User
@@ -118,14 +144,29 @@ router.get('/username/:username', (req, res) => {
     .catch(err => console.log(err) && res.status(500).json({message: 'Internal server error'}));
 });
 
-//update user info
+//completely overwrite user info
 router.put('/userUpdate/:id', (req, res) => {
-  User
+  return User
     .findByIdAndUpdate(req.params.id, {$set: req.body})
     .exec()
     .then(user => res.status(204).end())
     .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
+
+//udpate multiple users. req body is {"updatedUsers": []}
+router.put('/usersUpdate/', (req, res) => {
+  //console.log(req.body.updatedUsers);
+  req.body.users.forEach(function(currentUser) {
+    console.log(currentUser);
+    return User
+    .findByIdAndUpdate(currentUser.id, currentUser)
+    .exec()
+    .then(user => res.status(204).end())
+    .catch(err => res.status(500).json({message: 'Internal server error'}));
+  });
+});
+
+
 
 
 // NB: at time of writing, passport uses callbacks, not promises
