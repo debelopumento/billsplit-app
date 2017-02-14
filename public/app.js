@@ -188,8 +188,7 @@ function login(signedInUser) {
                     dataType: "json",
                     success: function (data) {
                         console.log(8, "bill is successfully sent to db");
-
-                        displayBillSplitsSummary();
+                        getAndDisplayBillDetails(localBill.id);
                     },
                     error: function(e) {
                         console.log(e);
@@ -449,12 +448,9 @@ function login(signedInUser) {
                 console.log(e);
             }
         });
-
-        
     }
 
     displayBillSplitsSummary();
-
     $('.js-goToMainPage').click(function(event) {
         displayBillSplitsSummary();    
     });
@@ -466,8 +462,8 @@ $(function() {
         $('header').toggleClass("hidden");
         var row = '';
         row += '<p>Hello!</p><br>';
-        row += '<input class="username" type="text" value="username-userE"><br>';
-        row += '<input class="password" type="password" value="password-userE">';
+        row += '<input class="username" type="text" value="username-userG"><br>';
+        row += '<input class="password" type="password" value="password-userG">';
         row += '<button class="js-login">Login</button>';
         row += '<p>New User?</p>';
         row += '<button class="js-register">Register</button>';

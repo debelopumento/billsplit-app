@@ -204,13 +204,17 @@ app.post('/bills', (req, res) => {
                           });
                           
                           //update these users
-                          updateTheseUsers.forEach(function(updateThisUser) {
-                            User
-                            .findByIdAndUpdate(updateThisUser._id, updateThisUser)
-                            .exec()
-                            .then(user => res.status(204).end())
-                            .catch(err => res.status(500).json({message: 'Internal server error'}));
+                          const promises = updateTheseUsers.map(function(updateThisUser) {
+                              return User
+                              .findByIdAndUpdate(updateThisUser._id, updateThisUser)
+                              .exec()
                           });
+
+                          Promise.all(promises)
+                              .then(user => res.status(204).end())
+                              .catch(err => res.status(500).json({message: 'Internal server error'}));
+
+
                       })
                       .then(user => res.status(204).end())
                       .catch(err => {
@@ -500,13 +504,15 @@ app.delete('/bills/:id', (req, res) => {
                           });
                           
                           //update these users
-                          updateTheseUsers.forEach(function(updateThisUser) {
-                            User
-                            .findByIdAndUpdate(updateThisUser._id, updateThisUser)
-                            .exec()
-                            .then(user => res.status(204).end())
-                            .catch(err => res.status(500).json({message: 'Internal server error'}));
+                          const promises = updateTheseUsers.map(function(updateThisUser) {
+                              return User
+                              .findByIdAndUpdate(updateThisUser._id, updateThisUser)
+                              .exec()
                           });
+                            Promise.all(promises)
+                              .then(user => res.status(204).end())
+                              .catch(err => res.status(500).json({message: 'Internal server error'}));
+
                       })
                       .then(user => res.status(204).end())
                       .catch(err => {
