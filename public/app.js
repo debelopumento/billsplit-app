@@ -65,6 +65,11 @@ function login(signedInUser) {
 
     function editBill(localBill, isNewBill) {
         var oldBill = localBill;
+        var addablePeople = [];
+        signedInUserFriendList.forEach(function(friend) {
+            addablePeople.push(friend.fullName);
+        });
+        addablePeople.push(userFullName);
         function renderBillSplitterList() {
             var billSplitterListHtml = '';
             $('.js-billSplitterList').html('');
@@ -100,11 +105,7 @@ function login(signedInUser) {
             }
         }
 
-        var addablePeople = [];
-        signedInUserFriendList.forEach(function(friend) {
-            addablePeople.push(friend.fullName);
-        });
-        addablePeople.push(userFullName);
+        
 
         $('main').html('<div class="js-editBillForm"></div>');        
         $('.js-editBillForm').append(
@@ -153,6 +154,7 @@ function login(signedInUser) {
         $('.js-submitBillUpdates').click(function(event) {
             var billSplitterCount = localBill.users.length;
             localBill.billDate = $('.billDate').val();
+            console.log(100, localBill.billDate);
             localBill.description = $('.billdescription').val();
             localBill.totalAmount = $('.billTotalAmount').val();
             
@@ -316,7 +318,6 @@ function login(signedInUser) {
 
                 //If user paid for the bill, friend owes user money
                 if (localBill.paidByUser.userId === userId) {
-                    console.log(12, localBill.paidByUser);
                     localBill.users.forEach(function(user) {
                         if (user.userId === friendId) {
                             var friendOwe = user.splitAmount;
