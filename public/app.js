@@ -373,31 +373,31 @@ function login(signedInUser) {
                             dataType: "json",
                             success: function () {
                                 console.log("added ", addedFriend.fullName, " successfully!");
+                                addedFriend.friends.push({
+                                    userId: signedInUser.id,
+                                    fullName: userFullName,
+                                    balance: 0
+                                });
+                                $.ajax({
+                                    url: "http://localhost:8080/users/userUpdate/" + addedFriend.id,
+                                    type: "PUT",
+                                    contentType: "application/json; charset=utf-8",
+                                    data: JSON.stringify(addedFriend),
+                                    dataType: "json",
+                                    success: function () {
+                                        console.log("added ", addedFriend.fullName, " successfully!");
+                                        displayBillSplitsSummary();
+                                    },
+                                    error: function(e) {
+                                        console.log(e);
+                                    }
+                                });
                             },
                             error: function(e) {
                                 console.log(e);
                             }
-                        });
-                        //add user to friend's friend list.
-                        addedFriend.friends.push({
-                            userId: signedInUser.id,
-                            fullName: userFullName,
-                            balance: 0
-                        });
-                        $.ajax({
-                            url: "http://localhost:8080/users/userUpdate/" + addedFriend.id,
-                            type: "PUT",
-                            contentType: "application/json; charset=utf-8",
-                            data: JSON.stringify(addedFriend),
-                            dataType: "json",
-                            success: function () {
-                                console.log("added ", addedFriend.fullName, " successfully!");
-                            },
-                            error: function(e) {
-                                console.log(e);
-                            }
-                        });
-                        displayBillSplitsSummary();
+                        });                        
+                        
                     },
                     fail: function() {
                         console.log('failed');
@@ -412,8 +412,9 @@ function login(signedInUser) {
             url: 'http://localhost:8080/users/userId/' + userId,
             type: 'GET',
             success: function(data) {
-                console.log(data);
+                console.log(71, data);
                 signedInUser = data;
+                signedInUserFriendList = data.friends;
                 $('nav').html('<h4>Hello, ' + userFullName + '</h4>');
                 $('main').html('<p>Your bill splits summary:</p>');
                 signedInUserFriendList.forEach(function(friend) {
