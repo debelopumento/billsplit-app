@@ -2,6 +2,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
+const colors = require('colors');
 
 require('dotenv').config();
 
@@ -360,13 +361,14 @@ app.put('/bills/:id', (req, res) => {
                             });
                             
                             //update these users
-                            updateTheseUsers.forEach(function(updateThisUser) {
-                              User
+                            const promises = updateTheseUsers.map(function(updateThisUser) {
+                              return User
                               .findByIdAndUpdate(updateThisUser._id, updateThisUser)
                               .exec()
+                            });
+                            Promise.all(promises)
                               .then(user => res.status(204).end())
                               .catch(err => res.status(500).json({message: 'Internal server error'}));
-                            });
                         })
                         .then(user => res.status(204).end())
                         .catch(err => {

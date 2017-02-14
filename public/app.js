@@ -188,8 +188,8 @@ function login(signedInUser) {
                     dataType: "json",
                     success: function (data) {
                         console.log(8, "bill is successfully sent to db");
+
                         displayBillSplitsSummary();
-                        
                     },
                     error: function(e) {
                         console.log(e);
@@ -354,25 +354,22 @@ function login(signedInUser) {
         $('.js-submit').click(function(event) {
             var searchUsername = $('.js-searchUsername').val();
             var url_username = 'http://localhost:8080/users/username/' + searchUsername;
-            
+            console.log(url_username);
             $.get({
                 url: url_username,
                 success: function(addedFriend) {
-                        //console.log(80, signedInUser);
+                        console.log(80, signedInUser);
                         //update user's friend list
-                        currentUser = signedInUser.user;
-                        console.log(81, currentUser);
-                        currentUser.friends.push({
+                        signedInUser.friends.push({
                             userId: addedFriend.id,
                             fullName: addedFriend.fullName,
                             balance: 0
                         });
-                        console.log(70, currentUser);
                         $.ajax({
-                            url: "http://localhost:8080/users/userUpdate/" + currentUser.id,
+                            url: "http://localhost:8080/users/userUpdate/" + signedInUser.id,
                             type: "PUT",
                             contentType: "application/json; charset=utf-8",
-                            data: JSON.stringify(currentUser),
+                            data: JSON.stringify(signedInUser),
                             dataType: "json",
                             success: function () {
                                 console.log("added ", addedFriend.fullName, " successfully!");
@@ -383,7 +380,7 @@ function login(signedInUser) {
                         });
                         //add user to friend's friend list.
                         addedFriend.friends.push({
-                            userId: currentUser.id,
+                            userId: signedInUser.id,
                             fullName: userFullName,
                             balance: 0
                         });
@@ -411,26 +408,38 @@ function login(signedInUser) {
 
 
     function displayBillSplitsSummary() {
+        $.ajax({
+            url: 'http://localhost:8080/users/userId/' + userId,
+            type: 'GET',
+            success: function(data) {
+                console.log(data);
+                signedInUser = data;
+                $('nav').html('<h4>Hello, ' + userFullName + '</h4>');
+                $('main').html('<p>Your bill splits summary:</p>');
+                signedInUserFriendList.forEach(function(friend) {
+                    $('main').append('<div userFriendId="' + friend.userId + '" friendName="' + friend.fullName + '">' + friend.fullName + ':  $' + friend.balance + '   <button class="js-checkFriendBillLog">See Log</button></div>');
+                });
+                $('main').append('<button class="js-addNewFriend">Add a new user to your friend list</button></br>');
+                $('main').append('<button class="js-addNewBill">Add a new bill</button>');
+                $('.js-addNewFriend').click(function(event) {
+                    addNewFriend();
+                });
+                $('.js-addNewBill').click(function(event) {
+                    addNewBill();
+                });
 
-        $('nav').html('<h4>Hello, ' + userFullName + '</h4>');
-        $('main').html('<p>Your bill splits summary:</p>');
-        signedInUserFriendList.forEach(function(friend) {
-            $('main').append('<div userFriendId="' + friend.userId + '" friendName="' + friend.fullName + '">' + friend.fullName + ':  $' + friend.balance + '   <button class="js-checkFriendBillLog">See Log</button></div>');
-        });
-        $('main').append('<button class="js-addNewFriend">Add a new user to your friend list</button></br>');
-        $('main').append('<button class="js-addNewBill">Add a new bill</button>');
-        $('.js-addNewFriend').click(function(event) {
-            addNewFriend();
-        });
-        $('.js-addNewBill').click(function(event) {
-            addNewBill();
+                $('.js-checkFriendBillLog').click(function(event) {
+                    var friendId = $(this).closest('div').attr('userFriendId');
+                    var friendName = $(this).closest('div').attr('friendName');
+                    displayBillsWfriend(friendId, friendName);
+                });
+            },
+            error: function(e) {
+                console.log(e);
+            }
         });
 
-        $('.js-checkFriendBillLog').click(function(event) {
-            var friendId = $(this).closest('div').attr('userFriendId');
-            var friendName = $(this).closest('div').attr('friendName');
-            displayBillsWfriend(friendId, friendName);
-        });
+        
     }
 
     displayBillSplitsSummary();
@@ -446,8 +455,8 @@ $(function() {
         $('header').toggleClass("hidden");
         var row = '';
         row += '<p>Hello!</p><br>';
-        row += '<input class="username" type="text" value="username-userD"><br>';
-        row += '<input class="password" type="password" value="password-userD">';
+        row += '<input class="username" type="text" value="username-userE"><br>';
+        row += '<input class="password" type="password" value="password-userE">';
         row += '<button class="js-login">Login</button>';
         row += '<p>New User?</p>';
         row += '<button class="js-register">Register</button>';
