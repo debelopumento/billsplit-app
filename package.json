@@ -17,10 +17,12 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-http": "^3.0.0",
+    "eslint-config-airbnb": "^14.1.0",
     "mocha": "^2.5.3"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/debelopumento/billsplit-app.git"
-  }
+  },
+  "eslintConfig": { "parser": "babel-eslint", "plugins": [ "import" ], "extends": [ "airbnb" ], "settings": { "import/parser": "babel-eslint", "import/resolve": { "moduleDirectory": [ "node_modules", "src", "./" ] } } }
 }

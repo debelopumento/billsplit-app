@@ -197,15 +197,15 @@ function login(signedInUser) {
             }
             if (isNewBill === true) {
                 $.ajax({
-                    url: "http://localhost:8080/bills/",
+                    url: window.location.href + 'bills/',
                     type: "POST",
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(localBill),
                     dataType: "json",
                     success: function (data) {
                         console.log(8, "bill is successfully sent to db");
-                        //updateBalances(localBill, isNewBill, oldBill);
-                        displayBillSplitsSummary();
+                        console.log(10, data);
+                        //getAndDisplayBillDetails(localBill.id);
                     },
                     error: function(e) {
                         console.log(e);
@@ -216,20 +216,20 @@ function login(signedInUser) {
     }
 
     function formatDate(unformattedDate) {
-                var date = new Date(unformattedDate);
-                var formattedMonth = date.getMonth() + 1;
-                if (formattedMonth < 10) {
-                    formattedMonth = '0' + formattedMonth.toString();
-                }
-                    else {formattedMonth = formattedMonth.toString();}
-                var formattedDay = date.getDate() + 1;
-                if (formattedDay < 10) {
-                    formattedDay = '0' + formattedDay.toString();
-                }
-                    else {formattedDay = formattedDay.toString();}
-                var formattedDate = date.getFullYear().toString() + '-' + formattedMonth + '-' + formattedDay;
-                return formattedDate;
-            }
+        var date = new Date(unformattedDate);
+        var formattedMonth = date.getMonth() + 1;
+        if (formattedMonth < 10) {
+            formattedMonth = '0' + formattedMonth.toString();
+        }
+            else {formattedMonth = formattedMonth.toString();}
+        var formattedDay = date.getDate() + 1;
+        if (formattedDay < 10) {
+            formattedDay = '0' + formattedDay.toString();
+        }
+            else {formattedDay = formattedDay.toString();}
+        var formattedDate = date.getFullYear().toString() + '-' + formattedMonth + '-' + formattedDay;
+        return formattedDate;
+    }
 
     function getAndDisplayBillDetails(billId) {
         function displayBill(bill) {
@@ -426,8 +426,6 @@ function login(signedInUser) {
                             else {
                                 $('main').append('<div userFriendId="' + friend.userId + '" friendName="' + friend.fullName + '">' + friend.fullName + ' lends deposit you:  $' + friend.balance + '   <button class="js-checkFriendBillLog">See Log</button></div>');
                             }
-
-                    
                 });
                 $('main').append('<button class="js-addNewFriend">Add a new user to your friend list</button></br>');
                 $('main').append('<button class="js-addNewBill">Add a new bill</button>');
@@ -437,7 +435,6 @@ function login(signedInUser) {
                 $('.js-addNewBill').click(function(event) {
                     addNewBill();
                 });
-
                 $('.js-checkFriendBillLog').click(function(event) {
                     var friendId = $(this).closest('div').attr('userFriendId');
                     var friendName = $(this).closest('div').attr('friendName');
