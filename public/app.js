@@ -14,7 +14,7 @@ function register() {
         newUser.friends = [];
         $.ajax({
                     type: "POST",
-                    url: "http://localhost:8080/users/",
+                    url: window.location.href + 'users/',
                     data: JSON.stringify(newUser),
                     dataType: "json",
                     contentType: "application/json",
@@ -269,7 +269,7 @@ function login(signedInUser) {
             });
             $('.js-deleteBill').click(function(event) {
                 $.ajax({
-                    url: 'http://localhost:8080/bills/' + billId,
+                    url: window.location.href + 'bills/' + billId,
                     type: 'DELETE',
                     success: function() {
                         console.log('successfully deleted bill!');
@@ -283,7 +283,7 @@ function login(signedInUser) {
             });
         }
         $.get({
-            url: 'http://localhost:8080/bills/' + billId,
+            url: window.location.href + 'bills/' + billId,
             success: function(data) {
                     displayBill(data);
             },
@@ -296,7 +296,7 @@ function login(signedInUser) {
 
     function displayBillsWfriend(friendId, friendName) {
         $.get({
-            url: 'http://localhost:8080/bills-sum-2users/' + userId + '/' + friendId,
+            url: window.location.href + 'bills-sum-2users/' + userId + '/' + friendId,
             success: function(data) {
                     displayTransactionHistories(data, friendId);
             },
@@ -357,7 +357,7 @@ function login(signedInUser) {
         );
         $('.js-submit').click(function(event) {
             var searchUsername = $('.js-searchUsername').val();
-            var url_username = 'http://localhost:8080/users/username/' + searchUsername;
+            var url_username = window.location.href + 'users/username/' + searchUsername
             console.log(url_username);
             $.get({
                 url: url_username,
@@ -370,7 +370,7 @@ function login(signedInUser) {
                             balance: 0
                         });
                         $.ajax({
-                            url: "http://localhost:8080/users/userUpdate/" + signedInUser.id,
+                            url: window.location.href + 'users/userUpdate/' + signedInUser.id,
                             type: "PUT",
                             contentType: "application/json; charset=utf-8",
                             data: JSON.stringify(signedInUser),
@@ -383,7 +383,7 @@ function login(signedInUser) {
                                     balance: 0
                                 });
                                 $.ajax({
-                                    url: "http://localhost:8080/users/userUpdate/" + addedFriend.id,
+                                    url: window.location.href + 'users/userUpdate/' + addedFriend.id,
                                     type: "PUT",
                                     contentType: "application/json; charset=utf-8",
                                     data: JSON.stringify(addedFriend),
@@ -413,7 +413,7 @@ function login(signedInUser) {
 
     function displayBillSplitsSummary() {
         $.ajax({
-            url: 'http://localhost:8080/users/userId/' + userId,
+            url: window.location.href + 'users/userId/' + userId,
             type: 'GET',
             success: function(data) {
                 console.log(71, data);
@@ -470,7 +470,7 @@ $(function() {
         row += '<p>New User?</p>';
         row += '<button class="js-register">Register</button> <button class="js-demo">Check Out Demo</button>';
         $('main').html(row);
-        var loginURL = "http://localhost:8080/users/me";
+        var loginURL = window.location.href + 'users/me'
         $('.js-login').click(function() {
             var usernameInput = $('.username').val();
             var passwordInput = $('.password').val();
