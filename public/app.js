@@ -464,16 +464,16 @@ $(function() {
         $('header').toggleClass("hidden");
         var row = '';
         row += '<p>Hello!</p><br>';
-        row += '<input class="username" type="text" value="username-userG"><br>';
-        row += '<input class="password" type="password" value="password-userG">';
+        row += '<input class="username" type="text" placeholder="username"><br>';
+        row += '<input class="password" type="password" placeholder="P@ssw0rd">';
         row += '<button class="js-login">Login</button>';
         row += '<p>New User?</p>';
-        row += '<button class="js-register">Register</button>';
+        row += '<button class="js-register">Register</button> <button class="js-demo">Check Out Demo</button>';
         $('main').html(row);
+        var loginURL = "http://localhost:8080/users/me";
         $('.js-login').click(function() {
             var usernameInput = $('.username').val();
             var passwordInput = $('.password').val();
-            var loginURL = "http://localhost:8080/users/me";
             $.ajax({
                 xhrFields: {
                     withCredentials: true
@@ -493,5 +493,22 @@ $(function() {
         $('.js-register').click(function(event) {
             register();
         });
+        $('.js-demo').click(function(event) {
+            $.ajax({
+                xhrFields: {
+                    withCredentials: true
+                },
+                headers: {
+                    'Authorization': 'Basic ' + btoa('username-userL:password-userL')
+                },
+                url: loginURL,
+                success: function(signedInUser) {
+                    login(signedInUser);
+                },
+                fail: function() {
+                    console.log('wrong password');
+                }
+            });
+        })
 });
 
