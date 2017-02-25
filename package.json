@@ -10,8 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^1.0.2",
-    "bcryptjs": "^2.4.3",
+    "bcrypt-as-promised": "^1.1.0",
+    "bcryptjs": "^2.4.0",
     "body-parser": "^1.16.0",
     "colors": "^1.1.2",
     "dotenv": "^4.0.0",
