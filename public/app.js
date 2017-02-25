@@ -52,12 +52,14 @@ function login(signedInUser) {
                      splitAmount: 0
                     }
                 ],
+                dueDay: Date(),
                 postedTime: Date(),
                 paidByUser: {userId: userId, fullName: userFullName},
                 padiOff: false,
                 memo: ""
         };
         var isNewBill = true;
+        console.log(34, newBill)
         editBill(newBill, isNewBill);
     }
 
@@ -105,16 +107,16 @@ function login(signedInUser) {
             }
         }
 
-        
-
+        console.log(35, localBill)
         $('main').html('<div class="js-editBillForm"></div>');        
         $('.js-editBillForm').append(
-            '<div>Bill Date: <input class="billdate" type="date" value="' + formatDate(localBill.billDate) + '"></div>' +
+            '<div>Bill Date: <input class="billdate" type="date" value="' + formatDate(localBill.billDate) + '"></div>')
+        $('.js-editBillForm').append(
             '<div>Description: <input class="billdescription" type="text" value="' + localBill.description + '"></div>' +
             '<div>Total Amount: <input class="billTotalAmount" type="number" value="' + localBill.totalAmount + '"></div>' +
             '<div><button class="js-equalSplit">Equal Split</button></div>' +
             '<div class="js-billSplitterList"></div>');
-
+        console.log(36, localBill)
         renderBillSplitterList();
 
         $('.js-editBillForm').append(
@@ -149,12 +151,11 @@ function login(signedInUser) {
             renderBillSplitterList();
 
         });
-        
 
         $('.js-submitBillUpdates').click(function(event) {
             var billSplitterCount = localBill.users.length;
-            localBill.billDate = $('.billDate').val();
-            console.log(100, localBill.billDate);
+            localBill.billDate = $('.billdate').val();
+            console.log(37, localBill);
             localBill.description = $('.billdescription').val();
             localBill.totalAmount = $('.billTotalAmount').val();
             
@@ -308,6 +309,7 @@ function login(signedInUser) {
         function displayTransactionHistories(data, friendId) {
             $('main').html('<p>Your transactions with ' + friendName + ':</p>');
             var balance = 0;
+            console.log(36, data)
             data.bills.forEach(function(localBill) {
                 //If friend paid for the bill
                 if (localBill.paidByUser.userId != userId) {                    

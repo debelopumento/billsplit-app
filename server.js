@@ -40,7 +40,7 @@ app.get('/userIdabc/:id', (req, res) => {
 app.get('/bills', (req, res) => {
   Bills
     .find()
-    .limit(30)
+    .limit(100)
     .exec()
     .then(bills => {
       res.json({
@@ -92,7 +92,7 @@ app.post('/bills', (req, res) => {
       return res.status(400).send(message);
     }
   }
-
+  console.log(901, req.body)
   Bills
     .create({
       billDate: req.body.billDate,
