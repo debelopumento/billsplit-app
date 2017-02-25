@@ -11,8 +11,15 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^1.0.2",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.16.0",
-    "express": "^4.14.0"
+    "colors": "^1.1.2",
+    "dotenv": "^4.0.0",
+    "express": "^4.14.0",
+    "mongoose": "^4.8.4",
+    "morgan": "^1.8.1",
+    "passport": "^0.3.2",
+    "passport-http": "^0.3.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
@@ -24,5 +31,23 @@
     "type": "git",
     "url": "git://github.com/debelopumento/billsplit-app.git"
   },
-  "eslintConfig": { "parser": "babel-eslint", "plugins": [ "import" ], "extends": [ "airbnb" ], "settings": { "import/parser": "babel-eslint", "import/resolve": { "moduleDirectory": [ "node_modules", "src", "./" ] } } }
+  "eslintConfig": {
+    "parser": "babel-eslint",
+    "plugins": [
+      "import"
+    ],
+    "extends": [
+      "airbnb"
+    ],
+    "settings": {
+      "import/parser": "babel-eslint",
+      "import/resolve": {
+        "moduleDirectory": [
+          "node_modules",
+          "src",
+          "./"
+        ]
+      }
+    }
+  }
 }
