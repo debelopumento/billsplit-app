@@ -231,6 +231,11 @@ function login(signedInUser) {
         return formattedDate;
     }
 
+    function displaySuccessfulDeleteScreen() {
+        $('nav').html('<h4>Hello, ' + userFullName + '</h4>');
+        $('main').html('<p>Your bill was deleted successfully!</p>');
+    }
+
     function getAndDisplayBillDetails(billId) {
         function displayBill(bill) {
             $('main').html('<p>Bill Details:</p>');
@@ -268,7 +273,7 @@ function login(signedInUser) {
                     type: 'DELETE',
                     success: function() {
                         console.log('successfully deleted bill!');
-                        displayBillSplitsSummary();
+                        displaySuccessfulDeleteScreen()
                     },
                     error: function(e) {
                         console.log(e);
