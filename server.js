@@ -36,8 +36,6 @@ app.get('/userIdabc/:id', (req, res) => {
   });
 });
 
-
-
 //all bills in db
 app.get('/bills', (req, res) => {
   Bills
@@ -83,40 +81,6 @@ app.get('/bills-sum-2users/:userIdInput/:friendIdInput', (req, res) => {
       res.status(500).json({message: 'Internal server error'})
     });
 });
-
-
-
-app.post('/billposttest2', (req, res) => {
-    Bills
-      .create({
-        billDate: req.body.billDate,
-        description: req.body.description,
-        totalAmount: req.body.totalAmount,
-        users: req.body.users,
-        postedTime: req.body.postedTime,
-        postedBy: req.body.postedBy,
-        paid: req.body.paid,
-        paidByUser: req.body.paidByUser,
-        dueDay: req.body.dueDay,
-        paidOff: req.body.paidOff,
-        memo: req.body.memo 
-      })
-      .then(function(data) {
-        console.log('hello'.red);
-        const a = 1;
-        const b = 1;
-        const c = b + a;
-        console.log(c, data);
-        return data;
-      })
-      .then(bill => res.json(bill.apiRepr()))
-      .catch(err => {
-      console.error(err);
-      res.status(500).json({message: 'Internal server error'});
-    });
-});
-
-
 
 app.post('/bills', (req, res) => {
   const requiredFields = ['totalAmount', 'users', 'paidByUser'];
@@ -317,13 +281,7 @@ app.put('/bills/:id', (req, res) => {
       .then(function() {
         //combine users array from old bill and updated bill
         var updatedBill = newBill;
-        console.log("new bill: ".blue);
-        console.log(updatedBill);
         let toUpdateUsers = updatedBill.users;
-        console.log("to update users array: ".red);
-        console.log(toUpdateUsers);
-        console.log("old bill users: ".red);
-        console.log(oldBill.users);
         oldBill.users.forEach(function(oldUser) {
           //check if this old user is still in updated bill's user list
           var userIsInUpdatedList = false;
@@ -336,14 +294,9 @@ app.put('/bills/:id', (req, res) => {
             toUpdateUsers.push(oldUser);
           }
         });
-        console.log("real user list: ".red);
-        console.log(toUpdateUsers);
         //update balances
-        toUpdateUsers.forEach(function(localBillSplitter) {
-            //console.log(99, localBillSplitter);
+        const promises = toUpdateUsers.map(function(localBillSplitter) {
             if (localBillSplitter.userId != updatedBill.paidByUser.userId) {
-                //usersIdCollection.userIds.push(localBillSplitter.userId);
-                //console.log(99, localBillSplitter);
                 Bills
                 .find({$and: [{users: {$elemMatch: {userId: updatedBill.paidByUser.userId}}}, {"paidByUser.userId": localBillSplitter.userId}]})
                 .exec()
@@ -373,25 +326,23 @@ app.put('/bills/:id', (req, res) => {
                         }
                       });
                     });
-                    console.log("balance between :".red);
-                    console.log(localBillSplitter.fullName, '  &  ', updatedBill.paidByUser.fullName);
-                    console.log("is: ".red);
-                    console.log(billSplitterBalance);
-                    //get users from users database and update them
-                      //find bill-payer
-                      User
+
+                    return User
                       .findById(updatedBill.paidByUser.userId)
                       .exec()
                       .then(function(billPayer) {
+                        console.log(310)
+                        let friendSubDocId = ''
                         billPayer.friends.forEach(function(friend) {
                           if (friend.userId === localBillSplitter.userId) {
-                            friend.balance = billSplitterBalance;
+                            friendSubDocId = friend._id
                           }
-                        });
-                        var updateTheseUsers = [];
-                        updateTheseUsers.push(billPayer);
-
-                        User
+                        })
+                        let friendSubDoc = billPayer.friends.id(friendSubDocId)
+                        friendSubDoc.balance = billSplitterBalance
+                        billPayer.save()
+                        
+                        return User
                         .findById(localBillSplitter.userId)
                         .exec()
                         .then(function(toBeUpdatedBillSplitter) {
@@ -399,36 +350,13 @@ app.put('/bills/:id', (req, res) => {
                               if (friend.userId === updatedBill.paidByUser.userId) {
                                 friend.balance = billPayerBalance;
                               }
-                              
                             });
-                            updateTheseUsers.push(toBeUpdatedBillSplitter);
-                            
-                            //update these users
-                            console.log("update These Users: ".red);
-                            console.log(updateTheseUsers);
-                            const promises = updateTheseUsers.map(function(updateThisUser) {
-                              console.log("updated User: ".red);
-                              console.log(updateThisUser);
-                              return User
-                              .findByIdAndUpdate(updateThisUser._id, updateThisUser)
-                              .exec()
-                            });
-                            Promise.all(promises)
-                              .then(user => res.status(204).end())
-                              .catch(err => res.status(500).json({message: 'Internal server error'}));
+                            console.log(311)
+                            return User
+                            .findByIdAndUpdate(localBillSplitter.userId, toBeUpdatedBillSplitter)                            
                         })
-                        .then(user => res.status(204).end())
-                        .catch(err => {
-                          console.error(err);
-                            res.status(500).json({message: 'Internal server error'})
-                        });
+                        
                       })
-                      .then(user => res.status(204).end())
-                      .catch(err => {
-                        console.error(err);
-                          res.status(500).json({message: 'Internal server error'})
-                      });
-
                   })
                   .then(bills => res.status(204).end())
                   .catch(err => {
@@ -445,26 +373,18 @@ app.put('/bills/:id', (req, res) => {
 
             }
         })
-
+        Promise.all(promises)
+        .then(bills => res.status(204).end())
+        .catch(err => {
+          console.error(err);
+          res.status(500).json({message: 'Internal server error'});
+        });
       })
-      .then(bills => res.status(204).end())
-      .catch(err => {
-        console.error(err);
-        res.status(500).json({message: 'Internal server error'});
-      });
-
-
-
-
-    
-
     })
     .then(bills => res.status(204).end())
     .catch(err => res.status(500).json({message: 'Internal server error'}));
 
 });
-
-
 
 app.delete('/bills/:id', (req, res) => {
   Bills
@@ -603,8 +523,6 @@ app.delete('/bills/:id', (req, res) => {
     .catch(err => res.status(500).json({message: 'Internal server error'}));
 
 });
-
-
 
 app.use('*', function(req, res) {
   res.status(404).json({message: 'Not Found'});
