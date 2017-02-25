@@ -205,7 +205,7 @@ function login(signedInUser) {
                     success: function (data) {
                         console.log(8, "bill is successfully sent to db");
                         console.log(10, data);
-                        //getAndDisplayBillDetails(localBill.id);
+                        getAndDisplayBillDetails(data._id);
                     },
                     error: function(e) {
                         console.log(e);
