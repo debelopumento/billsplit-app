@@ -170,7 +170,6 @@ app.post('/bills', (req, res) => {
                           }
                         });
                         console.log(311)
-                        //updateUser(localBillSplitter.userId, toBeUpdatedBillSplitter)
                         return User
                         .findByIdAndUpdate(localBillSplitter.userId, toBeUpdatedBillSplitter)                        
                     })
