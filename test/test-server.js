@@ -9,6 +9,7 @@ var storage = server.storage
 
 const faker = require('faker')
 const mongoose = require('mongoose')
+var Bills = require('../models.js').Bills
 
 chai.use(chaiHttp)
 
@@ -24,14 +25,14 @@ describe('index page', function() {
     })
   })
 
-/*
-  
-  it('should list all/up-to-100 bills in database', function() {
-	let res
-	return chai.request(app)
+
+  /*
+  it('should list all/up-to-100 bills in database', function(done) {
+	//let res
+	chai.request(app)
 		.get('/bills')
-		.then(function(_res) {
-			res = _res
+		.then(function(err, res) {
+			console.log(101, err, res)
 			res.should.have.status(200)
 			res.body.bills.should.have.length.of.at.least(1)
 			Bills
@@ -40,17 +41,24 @@ describe('index page', function() {
 				res.body.bills.should.have.length.of(count)
 				done()
 			})
-   		})
+   	})
+    .catch(function (e) {
+      console.log(103, e)
+    })
   })
+  */
+  
 
+  
   it('should delete a bill', function() {
   	let bill
   	Bills
   	.findOne()
   	.exec()
   	.then(function(_bill) {
-  		bill = _bill
-  		return chai.request(app).delete(`/bills/${bill.id)}`)
+  		console.log(105, _bill)
+      bill = _bill
+  		return chai.request(app).delete(`/bills/${bill.id}`)
   	})
   	.then(function(res) {
   		res.should.have.status(204)
@@ -60,8 +68,9 @@ describe('index page', function() {
   		should.not.exist(_bill)
   	})
   })
+  
 
-*/
+
 
 })
 

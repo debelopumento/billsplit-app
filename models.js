@@ -16,7 +16,7 @@ const billsSchema = mongoose.Schema({
   paidByUser: {userId: String, 
       fullName: String
   },
-  dueDay: Date,
+  //dueDay: Date,
   paidOff: Boolean,
   memo: String
 });
@@ -32,7 +32,7 @@ billsSchema.methods.apiRepr = function() {
     postedBy: this.postedBy,
     paid: this.paid,
     paidByUser: this.paidByUser,
-    dueDay: this.dueDay,
+    //dueDay: this.dueDay,
     paidOff: this.paidOff,
     memo: this.memo
   };

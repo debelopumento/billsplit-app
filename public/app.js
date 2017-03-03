@@ -2,7 +2,7 @@
 function register() {
     $('main').html('<h3>New User Registration</h3>');
     var registrationForm = '<input class="js-userName" type="text" placeholder="username"><br>' +
-    '<input class="js-password" type="password" placeholder="p@ssW0rd"><br>' +
+    '<input class="js-password" type="password" placeholder="password"><br>' +
     '<input class="js-fullName" type="text" placeholder="Full Name"><br>' +
     '<button class="js-submit">Submit</button>';
     $('main').append(registrationForm);
@@ -52,7 +52,7 @@ function login(signedInUser) {
                      splitAmount: 0
                     }
                 ],
-                dueDay: Date(),
+                //dueDay: Date(),
                 postedTime: Date(),
                 paidByUser: {userId: userId, fullName: userFullName},
                 padiOff: false,
@@ -123,7 +123,7 @@ function login(signedInUser) {
             '<div><button class="js-addaSplitter">Add a friend to this bill</button></div>'
         );
         $('.js-editBillForm').append('<div>Paid by:<input id="paidByUser" class="autocompleteName" type="text" value="' + localBill.paidByUser.fullName + '"></div>');
-        $('.js-editBillForm').append('<div>Due: <input class="billDueDay" type="date" value="' + formatDate(localBill.dueDay) + '"></div>');
+        //$('.js-editBillForm').append('<div>Due: <input class="billDueDay" type="date" value="' + formatDate(localBill.dueDay) + '"></div>');
         $('.js-editBillForm').append('<div>Memo: <input class="billMemo" type="text" value="' + localBill.memo + '"></div>');
         $('.js-editBillForm').append('<div><button class="js-submitBillUpdates">Submit</button></div>');
 
@@ -153,34 +153,45 @@ function login(signedInUser) {
         });
 
         $('.js-submitBillUpdates').click(function(event) {
+
             var billSplitterCount = localBill.users.length;
             localBill.billDate = $('.billdate').val();
             console.log(37, localBill);
             localBill.description = $('.billdescription').val();
             localBill.totalAmount = $('.billTotalAmount').val();
             
+            //validate split amounts
+            var billIsValid = true
+            var splitTotal = 0
+            localBill.users.forEach(function(billSplitter) {
+                splitTotal = splitTotal + billSplitter.splitAmount
+            })
+
+            console.log(56, splitTotal, 57, localBill.totalAmount)
+            if (splitTotal != localBill.totalAmount) {
+                alert('The total of splits does not equal to the total amount of the bill!')
+                billIsValid = false
+                console.log('something is wrong with the split amounts')
+            }
+
+
             updateUserList();
 
             localBill.paidByUser.fullName = $('#paidByUser').val();
-            /*
-            signedInUserFriendList.push({
-                fullName: userFullName,
-                userId: userId
-            });
-            */
+            
             signedInUserFriendList.forEach(function(friendSearch) {
                 if (friendSearch.fullName === localBill.paidByUser.fullName) {
                     localBill.paidByUser.userId = friendSearch.userId;
                 }
             });
 
-            localBill.dueDay = $('.billDueDay').val();
+            //localBill.dueDay = $('.billDueDay').val();
             localBill.memo = $('.billMemo').val();
             
             console.log(14, localBill);
 
             //if it's a new bill, POST, if it's an existing bill, PUT
-            if (isNewBill === false) {
+            if (isNewBill === false && billIsValid === true) {
                 $.ajax({
                     url: window.location.href + 'bills/' + localBill.id,
                     type: "PUT",
@@ -196,7 +207,7 @@ function login(signedInUser) {
                     }
                 });
             }
-            if (isNewBill === true) {
+            if (isNewBill === true && billIsValid === true) {
                 $.ajax({
                     url: window.location.href + 'bills/',
                     type: "POST",
@@ -260,7 +271,7 @@ function login(signedInUser) {
                     $('main').append('<p>' + bill.paidByUser.fullName + ' paid for this bill.</p>');
                 }
 
-            $('main').append('<p>Due on: ' + formatDate(bill.dueDay) + '</p>');
+            //$('main').append('<p>Due on: ' + formatDate(bill.dueDay) + '</p>');
             $('main').append('<p>Memo: ' + bill.memo + '</p>' +
                 '<button class="js-editBill">Edit this bill</button>' +
                 '<button class="js-deleteBill">Delete this bill</button>');
@@ -458,16 +469,20 @@ function login(signedInUser) {
     $('.js-goToMainPage').click(function(event) {
         displayBillSplitsSummary();    
     });
+    $('.js-logout').click(function(event) {
+        console.log('log out')
+    })
 
 }
 
 
 $(function() {
+        
         $('header').toggleClass("hidden");
         var row = '';
         row += '<p>Hello!</p><br>';
         row += '<input class="username" type="text" placeholder="username"><br>';
-        row += '<input class="password" type="password" placeholder="P@ssw0rd">';
+        row += '<input class="password" type="password" placeholder="password">';
         row += '<button class="js-login">Login</button>';
         row += '<p>New User?</p>';
         row += '<button class="js-register">Register</button> <button class="js-demo">Check Out Demo</button>';
@@ -511,6 +526,6 @@ $(function() {
                     console.log('wrong password');
                 }
             });
-        })
+        })        
 });
 
