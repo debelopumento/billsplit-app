@@ -523,7 +523,8 @@ $(function() {
         })
         $('header').toggleClass("hidden");
         var row = '';
-        row += '<fb:login-button autologoutlink="true"></fb:login-button>'
+        //row += '<fb:login-button autologoutlink="true"></fb:login-button>'
+        row += '<fb:login-button autologoutlink="true" id="fbloginbutton" scope="public_profile,email" onlogin="checkLoginState();"></fb:login-button>'
         row += '<p>Hello!</p><br>';
         row += '<input class="username" type="text" placeholder="username"><br>';
         row += '<input class="password" type="password" placeholder="password">';
