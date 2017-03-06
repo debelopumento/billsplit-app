@@ -1,15 +1,14 @@
 
-function register() {
+function register(signedInUserFacebookId, signedInUserFullName) {
     $('main').html('<h3>New User Registration</h3>');
-    var registrationForm = '<input class="js-userName" type="text" placeholder="username"><br>' +
-    '<input class="js-password" type="password" placeholder="password"><br>' +
-    '<input class="js-fullName" type="text" placeholder="Full Name"><br>' +
+    var registrationForm = 'Username: <input class="js-userName" type="text" placeholder="username"><br>' +
+    'Full Name:<input class="js-fullName" type="text" value="' + signedInUserFullName + '"><br>' +
     '<button class="js-submit">Submit</button>';
     $('main').append(registrationForm);
     $('.js-submit').click(function(event) {
-        var newUser = {};
+        var newUser = {}
+        newUser.facebookId = signedInUserFacebookId
         newUser.username = $('.js-userName').val();
-        newUser.password = $('.js-password').val();
         newUser.fullName = $('.js-fullName').val();
         newUser.friends = [];
         $.ajax({
@@ -19,8 +18,6 @@ function register() {
                     dataType: "json",
                     contentType: "application/json",
                     success: function(data) {
-                        console.log(1, data);
-                        console.log(2, data.id);
                         var signedInUser = {user: data};
                         login(signedInUser);
                     },
@@ -513,8 +510,15 @@ $(function() {
                             type: 'GET',
                             success: function(data) {
                                 console.log(1, data);
-                                var signedInUser = {user: data};
-                                login(signedInUser);
+                                if (data != 0) {
+                                    var signedInUser = {user: data}
+                                    login(signedInUser)
+                                }
+                                if (data === 0) {
+                                    signedInUserFullName = response.name
+                                    console.log(2, signedInUserFullName)
+                                    register(signedInUserFacebookId, signedInUserFullName)
+                                }
                             }
                           })
                       });
