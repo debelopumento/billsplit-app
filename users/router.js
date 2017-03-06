@@ -14,26 +14,6 @@ const router = express.Router();
 router.use(jsonParser);
 
 
-const strategy = new BasicStrategy(
-  (username, password, cb) => {
-    User
-      .findOne({username})
-      .exec()
-      .then(user => {
-        if (!user) {
-          return cb(null, false, {
-            message: 'Incorrect username'
-          });
-        }
-        if (user.password !== password) {
-          return cb(null, false, 'Incorrect password');
-        }
-        return cb(null, user);
-      })
-      .catch(err => cb(err))
-});
-
-passport.use(strategy);
 
 
 router.post('/', (req, res) => {
@@ -45,7 +25,7 @@ router.post('/', (req, res) => {
     return res.status(422).json({message: 'Missing field: username'});
   }
 
-  let {username, password, fullName} = req.body;
+  let {username, facebookId, fullName} = req.body;
 
   if (typeof username !== 'string') {
     return res.status(422).json({message: 'Incorrect field type: username'});
@@ -57,19 +37,7 @@ router.post('/', (req, res) => {
     return res.status(422).json({message: 'Incorrect field length: username'});
   }
 
-  if (!(password)) {
-    return res.status(422).json({message: 'Missing field: password'});
-  }
 
-  if (typeof password !== 'string') {
-    return res.status(422).json({message: 'Incorrect field type: password'});
-  }
-
-  password = password.trim();
-
-  if (password === '') {
-    return res.status(422).json({message: 'Incorrect field length: password'});
-  }
 
   // check for existing user
   return User
@@ -81,13 +49,11 @@ router.post('/', (req, res) => {
         return res.status(422).json({message: 'username already taken'});
       }
       // if no existing user, hash password
-      return User.hashPassword(password)
     })
     .then(hash => {
       return User
         .create({
           username: username,
-          password: hash,
           fullName: fullName,
           facebookId: facebookId,
           friends: req.body.friends

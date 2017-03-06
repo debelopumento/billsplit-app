@@ -11,10 +11,6 @@ const UserSchema = mongoose.Schema({
     required: true,
     unique: true
   },
-  password: {
-    type: String,
-    required: true
-  },
   fullName: String,
   facebookId: String,
   friends: [{
@@ -35,13 +31,6 @@ UserSchema.methods.apiRepr = function() {
   };
 }
 
-UserSchema.methods.validatePassword = function(password) {
-  return bcrypt.compare(password, this.password);
-}
-
-UserSchema.statics.hashPassword = function(password) {
-  return bcrypt.hash(password, 10);
-}
 
 const User = mongoose.model('User', UserSchema, "userscollection");
 

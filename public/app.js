@@ -365,7 +365,7 @@ function login(signedInUser) {
     function addNewFriend() {
         $('main').html('<p>Add this user:</p>');
         $('main').append('<p>Username:</p>' +
-            '<input class="js-searchUsername" type="text" value="username-userO"><br>' +
+            '<input class="js-searchUsername" type="text" placeholder="username"><br>' +
             '<button class="js-submit">Add</button>'
         );
         $('.js-submit').click(function(event) {
@@ -505,10 +505,22 @@ $(function() {
                     statusChangeCallback(response);
                     console.log(11, response)
                     if(response.status === 'connected') {
-                      alert('hello')
+                      alert('Hello!')
                       FB.api('/me', function(response) {
                           console.log(25, response)
                       });
+                      $.ajax({
+                        url: 'http://localhost:8080/users/facebookId/1399956946732732',
+                        type: 'GET',
+                        success: function(data) {
+                            console.log(1, data);
+                            console.log(2, data.id);
+                            var signedInUser = {user: data};
+                            login(signedInUser);
+                        }
+                      })
+
+
                     }
                   });
 
@@ -529,10 +541,7 @@ $(function() {
         var row = '';
         //row += '<fb:login-button autologoutlink="true"></fb:login-button>'
         row += '<fb:login-button autologoutlink="true" id="fbloginbutton" scope="public_profile,email" onlogin="checkLoginState();"></fb:login-button>'
-        row += '<p>Hello!</p><br>';
-        row += '<input class="username" type="text" placeholder="username"><br>';
-        row += '<input class="password" type="password" placeholder="password">';
-        row += '<button class="js-login">Login</button>';
+        
         row += '<p>New User?</p>';
         row += '<button class="js-register">Register</button> <button class="js-demo">Check Out Demo</button>';
         $('main').html(row);
