@@ -509,7 +509,7 @@ $(function() {
                       FB.api('/me', function(response) {
                           signedInUserFacebookId = response.id
                           $.ajax({
-                            url: 'http://localhost:8080/users/facebookId/' + signedInUserFacebookId,
+                            url: window.location.href + 'users/facebookId/' + signedInUserFacebookId,
                             type: 'GET',
                             success: function(data) {
                                 console.log(1, data);
@@ -543,27 +543,7 @@ $(function() {
         row += '<p>New User?</p>';
         row += '<button class="js-register">Register</button> <button class="js-demo">Check Out Demo</button>';
         $('main').html(row);
-        var loginURL = window.location.href + 'users/me'
-        $('.js-login').click(function() {
-            var usernameInput = $('.username').val();
-            var passwordInput = $('.password').val();
-            $.ajax({
-                xhrFields: {
-                    withCredentials: true
-                },
-                headers: {
-                    'Authorization': 'Basic ' + btoa(usernameInput + ':' + passwordInput)
-                },
-                url: loginURL,
-                success: function(signedInUser) {
-                    
-                    login(signedInUser);
-                },
-                fail: function() {
-                    console.log('wrong password');
-                }
-            });
-        });
+        
         $('.js-register').click(function(event) {
             register();
         });
@@ -572,13 +552,8 @@ $(function() {
                 type: 'GET',
                 url: window.location.href + 'users/userId/5897b804162263d2e7756783',
                 success: function(data) {
-                    
-                    console.log(15, data)
                     var signedInUser = {user: data}
                     login(signedInUser);
-                },
-                fail: function() {
-                    console.log('wrong password');
                 }
             });
         })        
