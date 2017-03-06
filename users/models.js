@@ -16,7 +16,7 @@ const UserSchema = mongoose.Schema({
     required: true
   },
   fullName: String,
-  
+  facebookId: String,
   friends: [{
     fullName: String,
     userId: String,
@@ -28,6 +28,7 @@ const UserSchema = mongoose.Schema({
 UserSchema.methods.apiRepr = function() {
   return {
     id: this._id,
+    facebookId: this.facebookId,
     username: this.username || '',
     fullName: this.fullName || '',
     friends: this.friends

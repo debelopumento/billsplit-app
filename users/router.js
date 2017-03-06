@@ -89,6 +89,7 @@ router.post('/', (req, res) => {
           username: username,
           password: hash,
           fullName: fullName,
+          facebookId: facebookId,
           friends: req.body.friends
         })
     })
@@ -143,6 +144,16 @@ router.get('/username/:username', (req, res) => {
     .then(user =>res.json(user.apiRepr()))
     .catch(err => console.log(err) && res.status(500).json({message: 'Internal server error'}));
 });
+
+//search for a user by facebookId
+router.get('/facebookId/:facebookId', (req, res) => {
+  return User
+    .findOne({facebookId: req.params.facebookId})
+    .exec()
+    .then(user =>res.json(user.apiRepr()))
+    .catch(err => console.log(err) && res.status(500).json({message: 'Internal server error'}));
+});
+
 
 //completely overwrite user info
 router.put('/userUpdate/:id', (req, res) => {
