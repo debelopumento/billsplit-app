@@ -503,24 +503,22 @@ $(function() {
 
                   FB.getLoginStatus(function(response) {
                     statusChangeCallback(response);
-                    console.log(11, response)
                     if(response.status === 'connected') {
                       alert('Hello!')
+                      var signedInUserFacebookId = ''
                       FB.api('/me', function(response) {
-                          console.log(25, response)
+                          signedInUserFacebookId = response.id
+                          $.ajax({
+                            url: 'http://localhost:8080/users/facebookId/' + signedInUserFacebookId,
+                            type: 'GET',
+                            success: function(data) {
+                                console.log(1, data);
+                                var signedInUser = {user: data};
+                                login(signedInUser);
+                            }
+                          })
                       });
-                      $.ajax({
-                        url: 'http://localhost:8080/users/facebookId/1399956946732732',
-                        type: 'GET',
-                        success: function(data) {
-                            console.log(1, data);
-                            console.log(2, data.id);
-                            var signedInUser = {user: data};
-                            login(signedInUser);
-                        }
-                      })
-
-
+                      
                     }
                   });
 
@@ -558,6 +556,7 @@ $(function() {
                 },
                 url: loginURL,
                 success: function(signedInUser) {
+                    
                     login(signedInUser);
                 },
                 fail: function() {
@@ -570,14 +569,12 @@ $(function() {
         });
         $('.js-demo').click(function(event) {
             $.ajax({
-                xhrFields: {
-                    withCredentials: true
-                },
-                headers: {
-                    'Authorization': 'Basic ' + btoa('username-userL:password-userL')
-                },
-                url: loginURL,
-                success: function(signedInUser) {
+                type: 'GET',
+                url: window.location.href + 'users/userId/5897b804162263d2e7756783',
+                success: function(data) {
+                    
+                    console.log(15, data)
+                    var signedInUser = {user: data}
                     login(signedInUser);
                 },
                 fail: function() {
