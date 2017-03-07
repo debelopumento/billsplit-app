@@ -34,8 +34,6 @@ function login(signedInUser) {
     var signedInUserFriendList = signedInUser.user.friends;
     console.log(3939)
     $('header').removeClass("hidden");
-    var row = '<button class="js-logout">Log out</button>'
-    $('header').append(row)
     $('js-logout').click(function(event) {
         FB.logout(function(res) {
             conosle.log(49, res)

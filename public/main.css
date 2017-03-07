@@ -1,6 +1,56 @@
-html, body {
+html {
 	font-family: 'Nunito', sans-serif;
+	padding: 0px;
+	color: #212121;
+	width: 100%;
 }
+
+body {
+	margin: 0px;
+}
+
+header {
+	background-color: #ff7474;
+	display: block;
+	height: 50px;
+}
+
+button {
+	background-color: #ff7474;
+	color: white;
+	border: 0px solid;
+	border-radius: 3px;
+}
+
+.goToMainPage, .logOutButton {
+	margin: 10px;
+	margin-top: 15px;
+	font-size: 12px;
+
+}
+.goToMainPage {
+		float: left;
+
+}
+.logOutButton {
+	float: right;
+	
+}
+
+nav {
+	text-align: center;
+	font-size: 25px;
+	border-bottom: 1px lightgrey solid;
+}
+
+main {
+	padding-left: 30px;
+	padding-right: 30px;
+	padding-top: 10px;
+	width: 50%;
+	margin: 0 auto;
+}
+
 .hidden {
 	display: none;
 }
