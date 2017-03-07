@@ -1,6 +1,7 @@
 html {
 	font-family: 'Nunito', sans-serif;
 	padding: 0px;
+	margin: 0px;
 	color: #212121;
 	width: 100%;
 }
@@ -13,6 +14,7 @@ header {
 	background-color: #ff7474;
 	display: block;
 	height: 50px;
+	width: 100%;
 }
 
 button {
