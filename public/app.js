@@ -114,7 +114,7 @@ function login(signedInUser) {
         $('.js-editBillForm').append(
             '<div>Bill Date: <input class="billdate" type="date" value="' + formatDate(localBill.billDate) + '"></div>')
         $('.js-editBillForm').append(
-            '<div>Description: <input class="billdescription" type="text" value="' + localBill.description + '"></div>' +
+            '<div>Description: <input class="js-billDescription" type="text" value="' + localBill.description + '"></div>' +
             '<div>Total Amount: <input class="billTotalAmount" type="number" value="' + localBill.totalAmount + '"></div>' +
             '<div><button class="js-equalSplit">Equal Split</button></div>' +
             '<div class="js-billSplitterList"></div>');
@@ -124,10 +124,10 @@ function login(signedInUser) {
         $('.js-editBillForm').append(
             '<div><button class="js-addaSplitter">Add a friend to this bill</button></div>'
         );
-        $('.js-editBillForm').append('<div>Paid by:<input id="paidByUser" class="autocompleteName" type="text" value="' + localBill.paidByUser.fullName + '"></div>');
+        $('.js-editBillForm').append('<div>Paid by: <input id="paidByUser" class="autocompleteName" type="text" value="' + localBill.paidByUser.fullName + '"></div>');
         //$('.js-editBillForm').append('<div>Due: <input class="billDueDay" type="date" value="' + formatDate(localBill.dueDay) + '"></div>');
-        $('.js-editBillForm').append('<div>Memo: <input class="billMemo" type="text" value="' + localBill.memo + '"></div>');
-        $('.js-editBillForm').append('<div><button class="js-submitBillUpdates">Submit</button></div>');
+        $('.js-editBillForm').append('<div>Memo: <input class="billMemo memo" type="text" value="' + localBill.memo + '"></div>');
+        $('.js-editBillForm').append('<div><button class="js-submitBillUpdates bigButton">Submit</button></div>');
 
         $('.js-addaSplitter').click(function(event) {
             updateUserList();
@@ -159,7 +159,7 @@ function login(signedInUser) {
             var billSplitterCount = localBill.users.length;
             localBill.billDate = $('.billdate').val();
             console.log(37, localBill);
-            localBill.description = $('.billdescription').val();
+            localBill.description = $('.js-billDescription').val();
             localBill.totalAmount = $('.billTotalAmount').val();
             
             //validate split amounts
@@ -438,13 +438,13 @@ function login(signedInUser) {
                 $('main').html('<h3>Your bill splits summary:</h3>');
                 signedInUserFriendList.forEach(function(friend) {
                     if (friend.balance < 0) {
-                        $('main').append('<div userFriendId="' + friend.userId + '" friendName="' + friend.fullName + '">' + friend.fullName + ' owes you:  $' + (-friend.balance) + '   <button class="js-checkFriendBillLog">See Log</button></div>');
+                        $('main').append('<div userFriendId="' + friend.userId + '" friendName="' + friend.fullName + '">' + friend.fullName + ' owes you:  $' + (-friend.balance) + '   <button class="js-checkFriendBillLog right">See Log</button></div>');
                     } 
                         else if (friend.balance === 0) {
-                            $('main').append('<div userFriendId="' + friend.userId + '" friendName="' + friend.fullName + '">' + friend.fullName + ':  $' + friend.balance + '   <button class="js-checkFriendBillLog">See Log</button></div>');
+                            $('main').append('<div userFriendId="' + friend.userId + '" friendName="' + friend.fullName + '">' + friend.fullName + ':  $' + friend.balance + '   <button class="js-checkFriendBillLog right">See Log</button></div>');
                         }
                             else {
-                                $('main').append('<div userFriendId="' + friend.userId + '" friendName="' + friend.fullName + '">' + friend.fullName + ' lends deposit you:  $' + friend.balance + '   <button class="js-checkFriendBillLog">See Log</button></div>');
+                                $('main').append('<div userFriendId="' + friend.userId + '" friendName="' + friend.fullName + '">' + friend.fullName + ' lends deposit you:  $' + friend.balance + '   <button class="js-checkFriendBillLog right">See Log</button></div>');
                             }
                 });
                 $('main').append('<div class="buttonContainer"><button class="js-addNewFriend bigButton">Add a new user to your friend list</button></br><button class="js-addNewBill bigButton">Add a new bill</button></div>');
