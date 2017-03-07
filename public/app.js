@@ -32,8 +32,15 @@ function login(signedInUser) {
     var userId = signedInUser.user.id;
     var userFullName = signedInUser.user.fullName;
     var signedInUserFriendList = signedInUser.user.friends;
-    $('header').toggleClass("hidden");
-
+    console.log(3939)
+    $('header').removeClass("hidden");
+    var row = '<button class="js-logout">Log out</button>'
+    $('header').append(row)
+    $('js-logout').click(function(event) {
+        FB.logout(function(res) {
+            conosle.log(49, res)
+        })
+    })
     function addNewBill() {
         var newBill = {
             totalAmount: 0,
@@ -467,7 +474,8 @@ function login(signedInUser) {
         displayBillSplitsSummary();    
     });
     $('.js-logout').click(function(event) {
-        console.log('log out')
+        FB.logout()
+        window.location.reload()
     })
 
 }
@@ -498,32 +506,7 @@ $(function() {
               //
               // These three cases are handled in the callback function.
 
-              FB.getLoginStatus(function(response) {
-                statusChangeCallback(response);
-                if(response.status === 'connected') {
-                  var signedInUserFacebookId = ''
-                  FB.api('/me', function(response) {
-                      signedInUserFacebookId = response.id
-                      $.ajax({
-                        url: window.location.href + 'users/facebookId/' + signedInUserFacebookId,
-                        type: 'GET',
-                        success: function(data) {
-                            console.log(1, data);
-                            if (data != 0) {
-                                var signedInUser = {user: data}
-                                login(signedInUser)
-                            }
-                            if (data === 0) {
-                                signedInUserFullName = response.name
-                                console.log(2, signedInUserFullName)
-                                register(signedInUserFacebookId, signedInUserFullName)
-                            }
-                        }
-                      })
-                  });
-                  
-                }
-              });
+              
 
           };
 
@@ -540,21 +523,11 @@ $(function() {
         })
         $('header').toggleClass("hidden");
         var row = '';
-        row += '<fb:login-button autologoutlink="true" id="fbloginbutton" scope="public_profile,email" onlogin="checkLoginState();"></fb:login-button>'
-        
-        row += '<p>New User?</p>';
-        row += '<button class="js-demo">Check Out Demo</button>';
+        row += '<fb:login-button autologoutlink="false" id="fbloginbutton" scope="public_profile,email" onlogin="checkLoginState();"></fb:login-button>'
+        row += '<p>Demo Account:</p>'
+        row += '<p>jasmin_wsdciiq_doe@tfbnw.net</p>'
+        row += '<p>password: demoPassword</p>'
         $('main').html(row);
-        
-        $('.js-demo').click(function(event) {
-            $.ajax({
-                type: 'GET',
-                url: window.location.href + 'users/userId/5897b804162263d2e7756783',
-                success: function(data) {
-                    var signedInUser = {user: data}
-                    login(signedInUser);
-                }
-            });
-        })        
+             
 });
 
