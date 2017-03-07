@@ -438,13 +438,13 @@ function login(signedInUser) {
                 $('main').html('<h3>Your bill splits summary:</h3>');
                 signedInUserFriendList.forEach(function(friend) {
                     if (friend.balance < 0) {
-                        $('main').append('<div userFriendId="' + friend.userId + '" friendName="' + friend.fullName + '">' + friend.fullName + ' owes you:  $' + (-friend.balance) + '   <button class="js-checkFriendBillLog right">See Log</button></div>');
+                        $('main').append('<div userFriendId="' + friend.userId + '" friendName="' + friend.fullName + '">' + friend.fullName + ' owes you:  <span class="green">$' + (-friend.balance) + '   </span><button class="js-checkFriendBillLog right">See Log</button></div>');
                     } 
                         else if (friend.balance === 0) {
-                            $('main').append('<div userFriendId="' + friend.userId + '" friendName="' + friend.fullName + '">' + friend.fullName + ':  $' + friend.balance + '   <button class="js-checkFriendBillLog right">See Log</button></div>');
+                            $('main').append('<div userFriendId="' + friend.userId + '" friendName="' + friend.fullName + '">' + friend.fullName + ':  <span class="blue">$' + friend.balance + '   </span><button class="js-checkFriendBillLog right">See Log</button></div>');
                         }
                             else {
-                                $('main').append('<div userFriendId="' + friend.userId + '" friendName="' + friend.fullName + '">' + friend.fullName + ' lends deposit you:  $' + friend.balance + '   <button class="js-checkFriendBillLog right">See Log</button></div>');
+                                $('main').append('<div userFriendId="' + friend.userId + '" friendName="' + friend.fullName + '">' + friend.fullName + ' lends deposit you:  <span class="red">$' + friend.balance + '   </span><button class="js-checkFriendBillLog right">See Log</button></div>');
                             }
                 });
                 $('main').append('<div class="buttonContainer"><button class="js-addNewFriend bigButton">Add a new user to your friend list</button></br><button class="js-addNewBill bigButton">Add a new bill</button></div>');

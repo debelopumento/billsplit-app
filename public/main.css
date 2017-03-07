@@ -34,6 +34,17 @@ input {
 	height: 10px;
 }
 
+.green {
+	color: #2bcecb;
+}
+
+.red {
+	color: #ed5353;
+}
+.blue {
+	color: #1a9ed7;
+}
+
 .memo {
 	height: 40px;
 	width: 60%;
@@ -71,7 +82,7 @@ main {
 	padding-left: 30px;
 	padding-right: 30px;
 	padding-top: 10px;
-	width: 280px;
+	width: 300px;
 	margin: 0 auto;
 }
 
