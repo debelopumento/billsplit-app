@@ -104,22 +104,26 @@ router.get('/getUsers/:input', (req, res) => {
 //search for a user by username
 router.get('/username/:username', (req, res) => {
   return User
-    .findOne({username: req.params.username})
+    .find({username: req.params.username})
+    .count()
     .exec()
-    .then(user =>res.json(user.apiRepr()))
-    .catch(err => console.log(err) && res.status(500).json({message: 'Internal server error'}));
-});
+    .then(function(count) {
+      if (count === 0) {
+        res.json(count)
+      } 
+        else if (count === 1) {
+          return User
+          .findOne({username: req.params.username})
+          .exec()
+          .then(user =>res.json(user.apiRepr()))
+          .catch(err => console.log(err) && res.status(500).json({message: 'Internal server error'}));
+        }
 
-/*
-//search for a user by facebookId
-router.get('/facebookId/:facebookId', (req, res) => {
-  return User
-    .findOne({facebookId: req.params.facebookId})
-    .exec()
-    .then(user =>res.json(user.apiRepr()))
-    .catch(err => console.log(err) && res.status(500).json({message: 'Internal server error'}));
-});
-*/
+    })
+      
+    
+})
+
 
 router.get('/facebookId/:facebookId', (req, res) => {
   return User
@@ -140,31 +144,6 @@ router.get('/facebookId/:facebookId', (req, res) => {
     })
     .catch(err => console.log(err) && res.status(500).json({message: 'Internal server error'}));
 });
-
-router.get('/test/:facebookId', (req, res) => {
-  return User
-    .find({facebookId: req.params.facebookId})
-    .count()
-    .exec()
-    .then(count => {
-      if (count = 0) {
-        console.log(155)
-        return res.status(422).json({message: 'new user. redirected to registration screen'});
-      }
-      /*
-      if (count = 1) {
-        cosnole.log(156)
-        return User
-        .findOne({facebookId: req.params.facebookId})
-        .exec()
-        .then(user =>res.json(user.apiRepr()))
-        .catch(err => console.log(err) && res.status(500).json({message: 'Internal server error'}));
-      }
-      */
-    })
-    .catch()
-})
-
 
 //completely overwrite user info
 router.put('/userUpdate/:id', (req, res) => {

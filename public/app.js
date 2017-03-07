@@ -376,46 +376,51 @@ function login(signedInUser) {
             console.log(url_username);
             $.get({
                 url: url_username,
-                success: function(addedFriend) {
+                success: function(res) {
                         console.log(80, signedInUser);
-                        //update user's friend list
-                        signedInUser.friends.push({
-                            userId: addedFriend.id,
-                            fullName: addedFriend.fullName,
-                            balance: 0
-                        });
-                        $.ajax({
-                            url: window.location.href + 'users/userUpdate/' + signedInUser.id,
-                            type: "PUT",
-                            contentType: "application/json; charset=utf-8",
-                            data: JSON.stringify(signedInUser),
-                            dataType: "json",
-                            success: function () {
-                                console.log("added ", addedFriend.fullName, " successfully!");
-                                addedFriend.friends.push({
-                                    userId: signedInUser.id,
-                                    fullName: userFullName,
+                        if (res === 0 ) {alert("This username does not exist!")}
+                            else {
+                                var addedFriend = res
+                                //update user's friend list
+                                signedInUser.friends.push({
+                                    userId: addedFriend.id,
+                                    fullName: addedFriend.fullName,
                                     balance: 0
                                 });
                                 $.ajax({
-                                    url: window.location.href + 'users/userUpdate/' + addedFriend.id,
+                                    url: window.location.href + 'users/userUpdate/' + signedInUser.id,
                                     type: "PUT",
                                     contentType: "application/json; charset=utf-8",
-                                    data: JSON.stringify(addedFriend),
+                                    data: JSON.stringify(signedInUser),
                                     dataType: "json",
                                     success: function () {
                                         console.log("added ", addedFriend.fullName, " successfully!");
-                                        displayBillSplitsSummary();
+                                        addedFriend.friends.push({
+                                            userId: signedInUser.id,
+                                            fullName: userFullName,
+                                            balance: 0
+                                        });
+                                        $.ajax({
+                                            url: window.location.href + 'users/userUpdate/' + addedFriend.id,
+                                            type: "PUT",
+                                            contentType: "application/json; charset=utf-8",
+                                            data: JSON.stringify(addedFriend),
+                                            dataType: "json",
+                                            success: function () {
+                                                console.log("Added ", addedFriend.fullName, " successfully!");
+                                                displayBillSplitsSummary();
+                                            },
+                                            error: function(e) {
+                                                console.log(e);
+                                            }
+                                        });
                                     },
                                     error: function(e) {
                                         console.log(e);
                                     }
-                                });
-                            },
-                            error: function(e) {
-                                console.log(e);
+                                });               
                             }
-                        });                        
+                                 
                         
                     },
                     fail: function() {
