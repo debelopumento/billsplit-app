@@ -74,17 +74,20 @@ main {
 
 .date {
 	color: darkgrey;
-	font-size: 12px;
+	font-size: 15px;
 
 }
-.transactionLine {
+.transaction {
+	display: block;
+	width: 100%;
+	border-bottom: dotted lightgrey 0.5px;
+	margin-bottom: 5px;
+}
+.transactionDetails {
 	display: block;
 	width: 100%;
 }
-.bottom {
-	border-bottom: dotted lightgrey 0.5px;
 
-}
 
 .billdescription {
 	font-size: 15px;

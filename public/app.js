@@ -275,8 +275,8 @@ function login(signedInUser) {
 
             //$('main').append('<p>Due on: ' + formatDate(bill.dueDay) + '</p>');
             $('main').append('<p>Memo: ' + bill.memo + '</p>' +
-                '<button class="js-editBill">Edit this bill</button>' +
-                '<button class="js-deleteBill">Delete this bill</button>');
+                '<button class="js-editBill bigButton">Edit Bill</button>' +
+                '<button class="js-deleteBill bigButton">Delete Bill</button>');
             $('.js-editBill').click(function(event) {
                 var isNewBill = false;
                 editBill(bill, isNewBill);
@@ -329,7 +329,7 @@ function login(signedInUser) {
                     localBill.users.forEach(function(user) {
                         if (user.userId === userId) {
                             var userOwe = user.splitAmount;
-                            $('main').append('<div class="transactionLine" billId="' + localBill.id + '"><container><span class="date left">' + formatDate(localBill.billDate) + '   </span><span class="billdescription right">' + localBill.description + '   </span></container><container class="transactionLine bottom"><span class="billSplit">You owe: $' + userOwe + '</span><button class="js-checkBillDetails">Edit/See Details</button><br></container></div>');
+                            $('main').append('<div class="transaction" billId="' + localBill.id + '"><container class="transactionDetails"><span class="date left">' + formatDate(localBill.billDate) + '   </span><span class="billdescription right">' + localBill.description + '   </span></container></br><container class="transactionLine bottom"><span class="billSplit">You owe: $' + userOwe + '</span><button class="js-checkBillDetails right">Edit/See Details</button><br></container></div>');
                             balance = balance - userOwe;
                         }
                     });
@@ -340,7 +340,7 @@ function login(signedInUser) {
                     localBill.users.forEach(function(user) {
                         if (user.userId === friendId) {
                             var friendOwe = user.splitAmount;
-                            $('main').append('<div class="transactionLine" billId="' + localBill.id + '"><container><span class="date left">' + formatDate(localBill.billDate) + '   </span><span class="billdescription right">' + localBill.description + '   </span></container><container class="transactionLine bottom"><span class="billSplit">' + friendName  + ' owes you: $' + friendOwe + '</span><button class="js-checkBillDetails">Edit/See Details</button><br></container></div>');
+                            $('main').append('<div class="transaction" billId="' + localBill.id + '"><container class="transactionDetails"><span class="date left">' + formatDate(localBill.billDate) + '   </span><span class="billdescription right">' + localBill.description + '   </span></container></br><container class="transactionLine bottom"><span class="billSplit">' + friendName  + ' owes you: $' + friendOwe + '</span><button class="js-checkBillDetails right">Edit/See Details</button><br></container></div>');
                             balance = balance + friendOwe;
                         }
                     });
