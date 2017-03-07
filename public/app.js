@@ -32,7 +32,6 @@ function login(signedInUser) {
     var userId = signedInUser.user.id;
     var userFullName = signedInUser.user.fullName;
     var signedInUserFriendList = signedInUser.user.friends;
-    console.log(3939)
     $('header').removeClass("hidden");
     $('body').css('background-image', 'none')
     $('body').css('background-color', 'rgba(0, 0, 0, 0)')
@@ -120,7 +119,6 @@ function login(signedInUser) {
             '<div>Total Amount: <input class="billTotalAmount" type="number" value="' + localBill.totalAmount + '"></div>' +
             '<div><button class="js-equalSplit">Equal Split</button></div>' +
             '<div class="js-billSplitterList"></div>');
-        console.log(36, localBill)
         renderBillSplitterList();
 
         $('.js-editBillForm').append(
@@ -162,13 +160,14 @@ function login(signedInUser) {
             localBill.billDate = $('.billdate').val();
             console.log(37, localBill);
             localBill.description = $('.js-billDescription').val();
-            localBill.totalAmount = $('.billTotalAmount').val();
-            
+            localBill.totalAmount = Number($('.billTotalAmount').val());
+            updateUserList();
             //validate split amounts
             var billIsValid = true
             var splitTotal = 0
             localBill.users.forEach(function(billSplitter) {
-                splitTotal = splitTotal + billSplitter.splitAmount
+                console.log(27, splitTotal, 28, billSplitter.splitAmount)
+                splitTotal = splitTotal + Number(billSplitter.splitAmount)
             })
 
             console.log(56, splitTotal, 57, localBill.totalAmount)
@@ -179,7 +178,7 @@ function login(signedInUser) {
             }
 
 
-            updateUserList();
+            
 
             localBill.paidByUser.fullName = $('#paidByUser').val();
             
@@ -324,7 +323,6 @@ function login(signedInUser) {
         function displayTransactionHistories(data, friendId) {
             $('main').html('<p>Your transactions with ' + friendName + ':</p>');
             var balance = 0;
-            console.log(36, data)
             data.bills.forEach(function(localBill) {
                 //If friend paid for the bill
                 if (localBill.paidByUser.userId != userId) {                    
@@ -433,7 +431,6 @@ function login(signedInUser) {
             url: window.location.href + 'users/userId/' + userId,
             type: 'GET',
             success: function(data) {
-                console.log(71, data);
                 signedInUser = data;
                 signedInUserFriendList = data.friends;
                 $('nav').html('<h4>Hello, ' + userFullName + '</h4>');
@@ -515,7 +512,6 @@ $(function() {
                         url: window.location.href + 'users/facebookId/' + signedInUserFacebookId,
                         type: 'GET',
                         success: function(data) {
-                            console.log(1, data);
                             if (data != 0) {
                                 var signedInUser = {user: data}
                                 login(signedInUser)
