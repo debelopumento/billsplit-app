@@ -256,14 +256,14 @@ function login(signedInUser) {
             $('main').html('<p>Bill Details:</p>');
             $('main').append('<p>Date: ' + formatDate(bill.billDate) + '</p>' +
             '<p>Description: ' + bill.description + '</p>' +
-            '<p>Total Amount: ' + bill.totalAmount + '</p>') +
+            '<p>Total Amount: <span class="blue">$' + bill.totalAmount + '</span></p>') +
             '<p>Bill splits: </p>';
             bill.users.forEach(function(user) {
                 if (user.userId === userId) {
-                    $('main').append('<p>Your Split: $' + user.splitAmount + '</p>');
+                    $('main').append('<p>Your Split: <span class="green">$' + user.splitAmount + '</span></p>');
                 }
                     else {
-                        $('main').append('<p>' + user.fullName + ': $' + user.splitAmount + '</p>');
+                        $('main').append('<p>' + user.fullName + ': <span class="green">$' + user.splitAmount + '</span></p>');
                     }
             });
             //who paid for the bill?
@@ -330,7 +330,7 @@ function login(signedInUser) {
                     localBill.users.forEach(function(user) {
                         if (user.userId === userId) {
                             var userOwe = user.splitAmount;
-                            $('main').append('<div class="transaction" billId="' + localBill.id + '"><container class="transactionDetails"><span class="date left">' + formatDate(localBill.billDate) + '   </span><span class="billdescription right">' + localBill.description + '   </span></container></br><container class="transactionLine bottom"><span class="billSplit">You owe: $' + userOwe + '</span><button class="js-checkBillDetails right">Edit/See Details</button><br></container></div>');
+                            $('main').append('<div class="transaction" billId="' + localBill.id + '"><container class="transactionDetails"><span class="date left">' + formatDate(localBill.billDate) + '   </span><span class="billdescription right">' + localBill.description + '   </span></container></br><container class="transactionLine bottom"><span class="billSplit">You owe: <span class="red">$' + userOwe + '</span></span><button class="js-checkBillDetails right">Edit/See Details</button><br></container></div>');
                             balance = balance - userOwe;
                         }
                     });
@@ -341,20 +341,20 @@ function login(signedInUser) {
                     localBill.users.forEach(function(user) {
                         if (user.userId === friendId) {
                             var friendOwe = user.splitAmount;
-                            $('main').append('<div class="transaction" billId="' + localBill.id + '"><container class="transactionDetails"><span class="date left">' + formatDate(localBill.billDate) + '   </span><span class="billdescription right">' + localBill.description + '   </span></container></br><container class="transactionLine bottom"><span class="billSplit">' + friendName  + ' owes you: $' + friendOwe + '</span><button class="js-checkBillDetails right">Edit/See Details</button><br></container></div>');
+                            $('main').append('<div class="transaction" billId="' + localBill.id + '"><container class="transactionDetails"><span class="date left">' + formatDate(localBill.billDate) + '   </span><span class="billdescription right">' + localBill.description + '   </span></container></br><container class="transactionLine bottom"><span class="billSplit">' + friendName  + ' owes you: <span class="green">$' + friendOwe + '</span></span><button class="js-checkBillDetails right">Edit/See Details</button><br></container></div>');
                             balance = balance + friendOwe;
                         }
                     });
                 }
             });
             if (balance === 0) {
-                $('main').append('<p>You two are even.</p>');
+                $('main').append('<div class="transactionTotle"><p>You two are even.</p></div>');
             }
             if (balance > 0) {
-                $('main').append('<p>' + friendName + ' owes you: $' + balance + '</p>');
+                $('main').append('<div class="transactionTotle"><p>' + friendName + ' owes you: <span class="green">$' + balance + '</span></p></div>');
             }
             if (balance < 0) {
-                $('main').append('<p>You owe ' + friendName + ' $' + (-balance) + '</p>');
+                $('main').append('<div class="transactionTotle"><p>You owe ' + friendName + ' <span class="red">$' + (-balance) + '</span></p></div>');
             }
             //$('main').append('<p>The balance is: $' + balance + '.</p>');
             $('.js-checkBillDetails').click(function(event) {
