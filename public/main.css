@@ -37,6 +37,13 @@ button {
 	
 }
 
+.left {
+	float: left;
+}
+.right {
+	float: right;
+}
+
 nav {
 	text-align: center;
 	font-size: 25px;
@@ -47,10 +54,44 @@ main {
 	padding-left: 30px;
 	padding-right: 30px;
 	padding-top: 10px;
-	width: 50%;
+	width: 280px;
 	margin: 0 auto;
 }
 
+.buttonContainer {
+	margin-top: 25px;
+	border-top: 1px lightgrey solid;
+	padding-top: 25px;
+}
+
+.bigButton {
+	width: 100%;
+	height: 20px;
+	margin: 0 auto;
+	margin-top: 5px;
+	font-size: 12px;
+}
+
+.date {
+	color: darkgrey;
+	font-size: 12px;
+
+}
+.transactionLine {
+	display: block;
+	width: 100%;
+}
+.bottom {
+	border-bottom: dotted lightgrey 0.5px;
+
+}
+
+.billdescription {
+	font-size: 15px;
+}
+.billSplit {
+	font-size: 15px;
+}
 .hidden {
 	display: none;
 }

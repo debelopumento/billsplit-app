@@ -329,7 +329,7 @@ function login(signedInUser) {
                     localBill.users.forEach(function(user) {
                         if (user.userId === userId) {
                             var userOwe = user.splitAmount;
-                            $('main').append('<div billId="' + localBill.id + '"><span>' + formatDate(localBill.billDate) + '   </span><span>' + localBill.description + '   </span><span>You owe: $' + userOwe + '</span><button class="js-checkBillDetails">Edit/See Details</button><br>');
+                            $('main').append('<div class="transactionLine" billId="' + localBill.id + '"><container><span class="date left">' + formatDate(localBill.billDate) + '   </span><span class="billdescription right">' + localBill.description + '   </span></container><container class="transactionLine bottom"><span class="billSplit">You owe: $' + userOwe + '</span><button class="js-checkBillDetails">Edit/See Details</button><br></container></div>');
                             balance = balance - userOwe;
                         }
                     });
@@ -340,7 +340,7 @@ function login(signedInUser) {
                     localBill.users.forEach(function(user) {
                         if (user.userId === friendId) {
                             var friendOwe = user.splitAmount;
-                            $('main').append('<div billId="' + localBill.id + '"><span>' + formatDate(localBill.billDate) + '   </span><span>' + localBill.description + '   </span>' + friendName  + '<span> owes you: $' + friendOwe + '</span><button class="js-checkBillDetails">Edit/See Details</button><br>');
+                            $('main').append('<div class="transactionLine" billId="' + localBill.id + '"><container><span class="date left">' + formatDate(localBill.billDate) + '   </span><span class="billdescription right">' + localBill.description + '   </span></container><container class="transactionLine bottom"><span class="billSplit">' + friendName  + ' owes you: $' + friendOwe + '</span><button class="js-checkBillDetails">Edit/See Details</button><br></container></div>');
                             balance = balance + friendOwe;
                         }
                     });
@@ -357,8 +357,9 @@ function login(signedInUser) {
             }
             //$('main').append('<p>The balance is: $' + balance + '.</p>');
             $('.js-checkBillDetails').click(function(event) {
-                var cuurentBillId = $(this).closest('div').attr('billId');
-                getAndDisplayBillDetails(cuurentBillId);
+                var curentBillId = $(this).closest('div').attr('billId');
+                console.log(49, curentBillId)
+                getAndDisplayBillDetails(curentBillId);
             });
         }   
 
@@ -366,8 +367,7 @@ function login(signedInUser) {
 
     function addNewFriend() {
         $('main').html('<p>Add this user:</p>');
-        $('main').append('<p>Username:</p>' +
-            '<input class="js-searchUsername" type="text" placeholder="username"><br>' +
+        $('main').append('<input class="js-searchUsername" type="text" placeholder="username"><br>' +
             '<button class="js-submit">Add</button>'
         );
         $('.js-submit').click(function(event) {
@@ -435,7 +435,7 @@ function login(signedInUser) {
                 signedInUser = data;
                 signedInUserFriendList = data.friends;
                 $('nav').html('<h4>Hello, ' + userFullName + '</h4>');
-                $('main').html('<p>Your bill splits summary:</p>');
+                $('main').html('<h3>Your bill splits summary:</h3>');
                 signedInUserFriendList.forEach(function(friend) {
                     if (friend.balance < 0) {
                         $('main').append('<div userFriendId="' + friend.userId + '" friendName="' + friend.fullName + '">' + friend.fullName + ' owes you:  $' + (-friend.balance) + '   <button class="js-checkFriendBillLog">See Log</button></div>');
@@ -447,8 +447,7 @@ function login(signedInUser) {
                                 $('main').append('<div userFriendId="' + friend.userId + '" friendName="' + friend.fullName + '">' + friend.fullName + ' lends deposit you:  $' + friend.balance + '   <button class="js-checkFriendBillLog">See Log</button></div>');
                             }
                 });
-                $('main').append('<button class="js-addNewFriend">Add a new user to your friend list</button></br>');
-                $('main').append('<button class="js-addNewBill">Add a new bill</button>');
+                $('main').append('<div class="buttonContainer"><button class="js-addNewFriend bigButton">Add a new user to your friend list</button></br><button class="js-addNewBill bigButton">Add a new bill</button></div>');
                 $('.js-addNewFriend').click(function(event) {
                     addNewFriend();
                 });
