@@ -35,6 +35,7 @@ function login(signedInUser) {
     console.log(3939)
     $('header').removeClass("hidden");
     $('body').css('background-image', 'none')
+    $('body').css('background-color', 'rgba(0, 0, 0, 0)')
     $('js-logout').click(function(event) {
         FB.logout(function(res) {
             conosle.log(49, res)
@@ -544,11 +545,12 @@ $(function() {
 
   
         })
+        var clipboard = new Clipboard('.btn')
         $('header').toggleClass("hidden");
         var row = '<div class="landing"><h1 class="landingTitle">Splitting Bills with Friends and Roommates</h1>' +
                   '<div class="fbLoginButtonContainer"><fb:login-button autologoutlink="false" data-size="xlarge" id="fbloginbutton" scope="public_profile,email" onlogin="checkLoginState();"></fb:login-button></div>' +
                   '<div class="demoAccountInfo"><p>Demo Account:</p>' +
-                  '<p>jasmin_wsdciiq_doe@tfbnw.net</p>' +
+                  '<p>jasmin_wsdciiq_doe@tfbnw.net<button class="btn copyToClipboard" data-clipboard-text="jasmin_wsdciiq_doe@tfbnw.net">Copy to clipboard</button></p>' +
                   '<p>password: demoPassword</p></div></div>'
         $('main').html(row);
         
