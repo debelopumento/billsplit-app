@@ -8,6 +8,7 @@ html {
 
 body {
 	margin: 0px;
+	background-image: url("./images/landing.jpg")
 }
 
 header {
@@ -15,6 +16,27 @@ header {
 	display: block;
 	height: 50px;
 	width: 100%;
+}
+
+.landing {
+	text-align: center;
+	margin-top: 45px;
+	color: white;
+
+}
+
+.landingTitle {
+	font-family: 'Fugaz One', cursive;
+}
+
+.fbLoginButtonContainer {
+	margin-top: 105px;
+	margin-bottom: 45px;
+}
+
+.demoAccountInfo {
+	font-size: 12px;
+	color: lightgrey;
 }
 
 button {

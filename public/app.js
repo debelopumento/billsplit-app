@@ -34,6 +34,7 @@ function login(signedInUser) {
     var signedInUserFriendList = signedInUser.user.friends;
     console.log(3939)
     $('header').removeClass("hidden");
+    $('body').css('background-image', 'none')
     $('js-logout').click(function(event) {
         FB.logout(function(res) {
             conosle.log(49, res)
@@ -544,12 +545,13 @@ $(function() {
   
         })
         $('header').toggleClass("hidden");
-        var row = '';
-        row += '<fb:login-button autologoutlink="false" id="fbloginbutton" scope="public_profile,email" onlogin="checkLoginState();"></fb:login-button>'
-        row += '<p>Demo Account:</p>'
-        row += '<p>jasmin_wsdciiq_doe@tfbnw.net</p>'
-        row += '<p>password: demoPassword</p>'
+        var row = '<div class="landing"><h1 class="landingTitle">Splitting Bills with Friends and Roommates</h1>' +
+                  '<div class="fbLoginButtonContainer"><fb:login-button autologoutlink="false" data-size="xlarge" id="fbloginbutton" scope="public_profile,email" onlogin="checkLoginState();"></fb:login-button></div>' +
+                  '<div class="demoAccountInfo"><p>Demo Account:</p>' +
+                  '<p>jasmin_wsdciiq_doe@tfbnw.net</p>' +
+                  '<p>password: demoPassword</p></div></div>'
         $('main').html(row);
+        
              
 });
 
