@@ -506,7 +506,32 @@ $(function() {
               //
               // These three cases are handled in the callback function.
 
-              
+              FB.getLoginStatus(function(response) {
+                //statusChangeCallback(response);
+                if(response.status === 'connected') {
+                  var signedInUserFacebookId = ''
+                  FB.api('/me', function(response) {
+                      signedInUserFacebookId = response.id
+                      $.ajax({
+                        url: window.location.href + 'users/facebookId/' + signedInUserFacebookId,
+                        type: 'GET',
+                        success: function(data) {
+                            console.log(1, data);
+                            if (data != 0) {
+                                var signedInUser = {user: data}
+                                login(signedInUser)
+                            }
+                            if (data === 0) {
+                                signedInUserFullName = response.name
+                                console.log(2, signedInUserFullName)
+                                register(signedInUserFacebookId, signedInUserFullName)
+                            }
+                        }
+                      })
+                  });
+                  
+                }
+              });
 
           };
 
