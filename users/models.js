@@ -3,22 +3,21 @@ const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
 
-
 const UserSchema = mongoose.Schema({
-  
   username: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   fullName: String,
   facebookId: String,
-  friends: [{
-    fullName: String,
-    userId: String,
-    balance: Number
-  }]
-  
+  friends: [
+    {
+      fullName: String,
+      userId: String,
+      balance: Number,
+    },
+  ],
 });
 
 UserSchema.methods.apiRepr = function() {
@@ -27,11 +26,10 @@ UserSchema.methods.apiRepr = function() {
     facebookId: this.facebookId,
     username: this.username || '',
     fullName: this.fullName || '',
-    friends: this.friends
+    friends: this.friends,
   };
-}
+};
 
+const User = mongoose.model('User', UserSchema, 'userscollection');
 
-const User = mongoose.model('User', UserSchema, "userscollection");
-
-module.exports = {User};
+module.exports = { User };

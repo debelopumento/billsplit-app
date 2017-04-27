@@ -3,22 +3,26 @@ const mongoose = require('mongoose');
 const billsSchema = mongoose.Schema({
   billDate: Date,
   description: String,
-  totalAmount: {type: Number, required: true},
-  users: [{userId: String,
-           fullName: String,
-           splitAmount: Number
-    }],
+  totalAmount: { type: Number, required: true },
+  users: [
+    {
+      userId: String,
+      fullName: String,
+      splitAmount: Number,
+    },
+  ],
   postedTime: Date,
-  postedBy: {userId: String, 
-      fullName: String
+  postedBy: {
+    userId: String,
+    fullName: String,
   },
   paid: Boolean,
-  paidByUser: {userId: String, 
-      fullName: String
+  paidByUser: {
+    userId: String,
+    fullName: String,
   },
-  //dueDay: Date,
   paidOff: Boolean,
-  memo: String
+  memo: String,
 });
 
 billsSchema.methods.apiRepr = function() {
@@ -34,11 +38,10 @@ billsSchema.methods.apiRepr = function() {
     paidByUser: this.paidByUser,
     //dueDay: this.dueDay,
     paidOff: this.paidOff,
-    memo: this.memo
+    memo: this.memo,
   };
-}
+};
 
+const Bills = mongoose.model('Bills', billsSchema, 'billscollection');
 
-const Bills = mongoose.model('Bills', billsSchema, "billscollection");
-
-module.exports = {Bills};
+module.exports = { Bills };
